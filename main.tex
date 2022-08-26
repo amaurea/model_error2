@@ -186,7 +186,31 @@ to it. This means that $P$ can be implemented by simply reading off
 one pixel value per sample, and its transpose $P^T$ consists of simply
 summing the value of the samples that hit each pixel. However, this
 comes at the cost of there being a discontinuous jump in values as one
-scans from one pixel to the next, as illustrated in figure~\ref{fig:nearest-neighbor}.
+scans from one pixel to the next, as illustrated in figure~\ref{fig:nearest-neigh}.
+
+\begin{figure*}
+	\centering
+	\begin{tabular}{cc}
+		\dfn{\large a} & \dfn{\large b} \\
+		\raisebox{-0.5\height}{\includegraphics[height=70mm]{nearest_neigh/path.pdf}} &
+		\hspace*{-5mm}\raisebox{-0.5\height}{\includegraphics[height=70mm]{nearest_neigh/vals.pdf}}
+	\end{tabular}
+	\caption{
+		\dfn{a}: Example path (red) of a detector across a few pixels.
+		The area closest to each pixel center (black dots) is shown with dotted lines.
+		In the nearest neighbor model, the value associated with each sample is simply
+		that of the closest pixel, regardless of where inside that pixel it is.
+		\dfn{b}: Example detector signal (red) for the same path. The closest
+		matching model (green) leaves a jagged residual (blue) that has power on
+		all lengthscales despite the signal itself being very smooth.
+		For comparison, if our model were a constant zero, then the residual
+		would just be the signal itself (red), and hence smooth.
+		{\bf If smooth residuals are much cheaper in the likelihood than jagged ones,
+		then a zero model will be preferred to one that hugs the signal as
+		tightly as possible} like the green curve.
+	}
+	\label{fig:nearest-neigh}
+\end{figure*}
 
 
 \begin{figure}

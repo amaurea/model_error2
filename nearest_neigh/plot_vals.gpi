@@ -1,0 +1,11 @@
+set key above width -2 samplen 2.5
+set xlabel "Sample" offset 0,0.5
+set ylabel "Flux" offset 1.2,0
+set yrange [-0.2:1.1]
+set pointsize 0.3
+set term svg size 600,400 font ",16"
+set output "vals.svg"
+plot \
+	"vals.txt" u 0:3 w l lw 2 title "signal", \
+	"vals.txt" u 0:4 w lp pt 7 title "model", \
+	"vals.txt" u 0:($4-$3) w lp pt 7 title "residual"
