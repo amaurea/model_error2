@@ -159,6 +159,35 @@
 \end{abstract}
 
 \section{Introduction}
+CMB telescopes observe the sky by scanning their detectors across
+it while continuously reading off a series of samples from the
+detectors. Typically the signal-to-noise ratio of each sample is
+small, but by combining a large number of samples with knowledge
+of which direction the telescope was pointing at any time, it's
+possible to reconstruct an image of the sky. There are several
+ways of doing this, with the most common being maximum-likelihood,
+filter+bin and destriping. These all start by modelling the
+telescope data as
+\begin{align}
+	d = Pm + n
+\end{align}
+where $d$ is the set of samples read off from the detectors
+(often called the time-ordered data), $m$ is the set of pixels
+of the sky image we want to reconstruct, $n$ is the noise
+in each sample (usually with significant correlations), and
+$P$ is a pointing matrix that encodes how each sample responds
+to the pixels in the image.
+
+For efficiency reasons, $P$ is always\footnote{I am not aware of any
+published CMB analysis that has done something else.}
+chosen to use simple nearest-neighbor interpolation, where the
+value of a sample is simply given by the value of the pixel nearest
+to it. This means that $P$ can be implemented by simply reading off
+one pixel value per sample, and its transpose $P^T$ consists of simply
+summing the value of the samples that hit each pixel. However, this
+comes at the cost of there being a discontinuous jump in values as one
+scans from one pixel to the next, as illustrated in figure~\ref{fig:nearest-neighbor}.
+
 
 \begin{figure}
 	\centering
