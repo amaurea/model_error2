@@ -208,6 +208,25 @@
 	\label{fig:ps}
 \end{figure}
 
+\begin{figure}
+	\centering
+	\includegraphics[width=\columnwidth]{common_mode/common.pdf}
+	\caption{
+		Demonstration of large-scale bias in a multi-detector system
+		due to an interaction between strong large-scale
+		detector correlations in the noise model and large
+		relative gain errors between the detectors.
+		\dfn{signal long}: An input long-wavelength signal,
+		with the same pixelization as the output to avoid subpixel bias.
+		\dfn{ML long}: Corresponding maximum-likelihood map, which
+		exhibits both an amplitude and phase error.
+		\dfn{signal short} and \dfn{ML short}: The same, but for a
+		short-wavelength mode. Here the bias is negligible,
+		despite the model's gain errors being scale-independent.
+	}
+	\label{fig:common}
+\end{figure}
+
 \bibliographystyle{act_titles}
 \bibliography{refs}
 
