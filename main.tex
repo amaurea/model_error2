@@ -160,6 +160,54 @@
 
 \section{Introduction}
 
+\begin{figure}
+	\centering
+	\includegraphics[width=\columnwidth]{subpix/model_error_toy.pdf}
+	\caption{
+		Demonstration of large loss of power in long-wavelength mode
+		caused by the poor subpixel treatment in the standard nearest-neighbor pointing matrix.
+		Figure~\ref{fig:ps} shows the noise model/inverse weights/inverse filter
+		used in the various methods.
+		\dfn{signal}: The input signal, a smooth long-wavelength mode,
+		sampled at 10 samples per output pixel.
+		\dfn{binned}: Simple binned map (the unweighted average per pixel).
+		Very suboptimal in the presence of correlated noise, but unbiased.
+		\dfn{ML}: Maximum-likelihood map. 2/3 of the signal is lost despite
+		the naive expectation of biaslessness for this estimator.
+		\dfn{FB deobs}: Filter+bin map debiased using an observation matrix.
+		Identical to ML.
+		\dfn{FB detrans}: Filter+bin map debiased by deconvolving a
+		transfer function measured from simulations. Even more biased
+		than the others due to ignoring mode coupling.
+		\dfn{destripe}: Destriper in the limit of 1-sample baselines.
+		Identical to ML.
+	}
+	\label{fig:subpix-bias}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\columnwidth]{subpix/model_error_toy_noerr.pdf}
+	\caption{
+		Like figure~\ref{fig:subpix-bias}, but with the input signal
+		having the same nearest-neighbor pixelization as the models.
+		In this case all models except FB detrans are unbiased.
+	}
+	\label{fig:subpix-noerr}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\columnwidth]{subpix/ps.pdf}
+	\caption{
+		The noise model/inverse weights/inverse filter used in the subpixel
+		bias demonstration in figures~\ref{fig:subpix-bias} and \ref{fig:subpix-noerr}.
+		It is a simple Fourier-diagonal 1/f + white noise spectrum
+		typical for ground-based CMB observations.
+	}
+	\label{fig:ps}
+\end{figure}
+
 \bibliographystyle{act_titles}
 \bibliography{refs}
 
