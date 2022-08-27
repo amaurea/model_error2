@@ -178,7 +178,23 @@ in each sample (usually with significant correlations), and
 $P$ is a pointing matrix that encodes how each sample responds
 to the pixels in the image.
 
-For efficiency reasons, $P$ is always\footnote{I am not aware of any
+Given the model, it's possible to either directly solve for
+an unbiased map (as in maximum likelihood mapmaking or destriping),
+or to measure and correct for the bias in a biased estimator
+(as in filter+bin mapmaking). However, this fails when the model
+does not actually describe the data, and this turns out to be
+the norm rather than the exception. The goal of this paper is to
+demonstrate the unintuitive and surprisingly large (O(1)) effect
+even seemingly inconsequential model errors can have when imaging
+the CMB. The full scope of these erorrs appears to be largely
+unappreciated, and I fear that most ground-based CMB analyses
+so far suffer from uncorrected bias at low multipoles in total intensity
+due to these effects.
+
+\section{Subpixel errors}
+Subpixel errors may be both the most common and most important
+class of model errors in CMB mapmaking.
+For efficiency reasons $P$ is always\footnote{I am not aware of any
 published CMB analysis that has done something else.}
 chosen to use simple nearest-neighbor interpolation, where the
 value of a sample is simply given by the value of the pixel nearest
@@ -187,8 +203,41 @@ one pixel value per sample, and its transpose $P^T$ consists of simply
 summing the value of the samples that hit each pixel. However, this
 comes at the cost of there being a discontinuous jump in values as one
 scans from one pixel to the next, as illustrated in figure~\ref{fig:nearest-neigh}.
+Hence, the closest the model can get to a smooth curve is a
+staircase-like funciton that hugs it, leaving a residual full of
+discontinuous jumps (the blue curve in the figure).
 
-Should cite \citet{model-error}.
+This by itself
+is not necessarily problematic. The trouble arises when this is coupled
+with a likelihood\footnote{The equivalent for filter+bin is a filter that
+impacts some modes more than others (which is the whole point of a filter),
+and for destriping it's a baseline amplitude prior with those properties.
+} where some modes have much less weight than others. Ground-based CMB
+telescopes suffer from atmospheric emission that acts as a large source
+of noise on large scales. This leads to time-ordered data noise power
+spectra similar to the one sketched in figure~\ref{fig:ps}, with
+a white noise floor at short timescales (high frequency) transitioning to a steep
+rise of several orders of magnitude as one moves to longer timescales
+(low frequency).
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\columnwidth]{subpix/ps.pdf}
+	\caption{
+		The noise model/inverse weights/inverse filter used in the subpixel
+		bias demonstration in figures~\ref{fig:subpix-bias} and \ref{fig:subpix-noerr}.
+		It is a simple Fourier-diagonal 1/f + white noise spectrum
+		typical for ground-based CMB observations. The frequency axis is in
+		dimensionless units in this toy example, but for real telescopes the
+		transition from white noise is typically a few Hz, corresponding
+		to multipoles of hundreds on the sky.
+	}
+	\label{fig:ps}
+\end{figure}
+
+Should cite \citet{model-error}. Should say something about discussion about
+this in the literature being limited to high-contrast regions, and cite XGLS
+etc.
 
 \begin{figure*}
 	\centering
@@ -249,18 +298,6 @@ Should cite \citet{model-error}.
 		In this case all models except FB detrans are unbiased.
 	}
 	\label{fig:subpix-noerr}
-\end{figure}
-
-\begin{figure}
-	\centering
-	\includegraphics[width=\columnwidth]{subpix/ps.pdf}
-	\caption{
-		The noise model/inverse weights/inverse filter used in the subpixel
-		bias demonstration in figures~\ref{fig:subpix-bias} and \ref{fig:subpix-noerr}.
-		It is a simple Fourier-diagonal 1/f + white noise spectrum
-		typical for ground-based CMB observations.
-	}
-	\label{fig:ps}
 \end{figure}
 
 \begin{figure}
