@@ -1,0 +1,16 @@
+set xlabel "Wavenumber (k)"   offset 0,0.6
+set ylabel "Fraction of power retained" offset 0.6,0
+set xrange [0:0.5]
+set yrange [0:1.2]
+set key above width -2
+set dt 2 (5,10)
+set dt 3 (0.01,10,5,0.01)
+scale(y,x) = x == 0 ? 0.0/0 : y*x**2
+
+set term svg size 600,400 lw 2
+set output "model_error_toy_2d.svg"
+plot \
+	"<paste toy2d_theory_ps.txt toy2d_binned_nn_signal_ps.txt"  u 1:($4/$2) w l lc 1 dt 1 title "bin.nn", \
+	"<paste toy2d_theory_ps.txt toy2d_ml_nn_signal_ps.txt"      u 1:($4/$2) w l lc 2 dt 1 title "ml.nn", \
+	"<paste toy2d_theory_ps.txt toy2d_binned_lin_signal_ps.txt" u 1:($4/$2) w l lc 3 dt 2 title "bin.lin", \
+	"<paste toy2d_theory_ps.txt toy2d_ml_lin_signal_ps.txt"     u 1:($4/$2) w l lc 4 dt 3 title "ml.lin"

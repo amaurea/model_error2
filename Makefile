@@ -1,4 +1,4 @@
-figs = subpix/model_error_toy.pdf subpix/model_resids.pdf subpix/model_error_toy_noerr.pdf  subpix/model_resid_cumps.pdf subpix/ps.pdf common_mode/common.pdf nearest_neigh/path.pdf nearest_neigh/vals.pdf
+figs = subpix/model_error_toy.pdf subpix/model_resids.pdf subpix/model_error_toy_noerr.pdf  subpix/model_resid_cumps.pdf subpix/ps.pdf common_mode/common.pdf nearest_neigh/path.pdf nearest_neigh/vals.pdf subpix/model_error_toy_2d.pdf
 
 main.pdf: main.tex refs.bib $(figs) FORCE
 	pdflatex -interaction=batchmode main.tex && bibtex main && pdflatex -interaction=batchmode main.tex && pdflatex -interaction=batchmode main.tex

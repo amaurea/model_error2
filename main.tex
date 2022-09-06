@@ -68,6 +68,26 @@
 this in the literature being limited to high-contrast regions, and cite XGLS
 etc.}
 
+\begin{figure}
+	\centering
+	\begin{closetabcols}
+	\begin{tabular}{cc}
+		Input signal & Maximum likelihood solution \\
+		\includegraphics[width=40mm]{subpix/toy2d_input_signal_map.png} &
+		\includegraphics[width=40mm]{subpix/toy2d_ml_nn_signal_map.png} \\
+		%\includegraphics[width=\columnwidth]{subpix/model_error_toy_2d.pdf}
+	\end{tabular}
+	\end{closetabcols}
+	\caption{Preview of the model error bias I will discuss in the following
+	sections. Despite the standard expectations that maximum-likelihood mapmaking
+	is optimal and unbiased, the maximum-likelihood solution (\dfn{right})
+	for a simple toy example is strongly power-deficient on large scales
+	compared to the input signal (\dfn{left}). As we shall see this bias
+	is not unique to maximum-likelihood methods, and can be triggered by
+	several subtle types of model error.}
+	\label{fig:maps-2d}
+\end{figure}
+
 CMB telescopes observe the sky by scanning their detectors across
 it while continuously reading off a series of samples from the
 detectors. Typically the signal-to-noise ratio of each sample is
@@ -95,10 +115,11 @@ does not actually describe the data, and this turns out to be
 the norm rather than the exception. The goal of this paper is to
 demonstrate the unintuitive and surprisingly large (O(1)) effect
 even seemingly inconsequential model errors can have when imaging
-the CMB. The full scope of these erorrs appears to be largely
+the CMB. The full scope of these errors appears to be largely
 unappreciated, and I fear that most ground-based CMB analyses
 so far suffer from uncorrected bias at low multipoles in total intensity
-due to these effects.
+due to these effects. The bias usually manifests as a power
+deficit at large scales, as illustrated in figure~\ref{fig:maps-2d}.
 
 \section{Subpixel errors}
 Subpixel errors may be both the most common and most important
@@ -170,7 +191,7 @@ fit the data.
 	\label{fig:ps}
 \end{figure}
 
-\subsection{Toy example}
+\subsection{1D toy example}
 To illustrate the interaction between a nearest neighbor pointing matrix's
 subpixel errors and a likelihood where large scales have low weight, let
 us consider a simple 1D case where 100 samples scan uniformly across 10 pixels:
@@ -207,7 +228,7 @@ in each pixel, with no weighting:
 \begin{lstlisting}
 map_binned = np.linalg.solve((P.T.dot(P)), P.T.dot(signal))
 \end{lstlisting}
-:%s
+
 \subsubsection{Maximum-likelihood}
 The maximum-likelihood solution of equation~\ref{eq:model} for the
 sky image $m$ is
@@ -254,7 +275,7 @@ them through the filter+bin process, and comparing the properties
 of the input and output images. The standard way of doing this is
 by assuming that equation~\ref{eq:model} describes the observation
 process, and that the bias can be described by a \emph{transfer function}:
-a simple independend scaling of each fourier mode. Under
+a simple independent scaling of each fourier mode. Under
 these assumptions, we can measure and correct the bias as follows.
 \begin{lstlisting}
 nsim = 1000
@@ -291,7 +312,8 @@ where $C_a$ is one's prior knowledge of the covariance of $a$.
 Destriping allows a speed/optimality tradeoff in the choice of
 baseline length and prior, and approaches the maximum likelihood
 map when the baseline length is a single sample and $C_a + N_w = N$.
-We implement this limit below. In our toy example $N_w = I$, so $C_a = F^{-1}-I$.
+We implement this limit below, but explore other choices in section~\ref{sec:toy-2d}.
+In our toy example $N_w = I$, so $C_a = F^{-1}-I$.
 \begin{lstlisting}
 iCa = np.linalg.inv(np.linalg.inv(F) - I)
 Z   = I-P.dot(np.linalg.solve(P.T.dot(P), P.T))
@@ -320,14 +342,58 @@ map_ds = np.linalg.solve(P.T.dot(P), P.T.dot(signal - a))
 		\dfn{FB detrans}: Filter+bin map debiased by deconvolving a
 		transfer function measured from simulations. Even more biased
 		than the others due to ignoring mode coupling.
-		\dfn{destripe}: Destriper in the limit of 1-sample baselines.
-		Identical to ML.
+		\dfn{destripe}: Destriper in the maximum-likelihood limit
+		(1-sample baselines with optimal baseline prior). Identical to ML.
 	}
 	\label{fig:subpix-bias}
 \end{figure}
 
 Figure~\ref{fig:subpix-bias} compares the recovered 1D sky ``images''
-for the different mapmaking methods for this toy example.
+for the different mapmaking methods for this toy example. All methods
+are expected to have a small loss of power at small scale (called
+the ``pixel window'') due to averaging the signal within each pixel,
+but this effect is well-known, easy to model, and not our focus here.
+We deconvolve it using the following function before plotting.
+\begin{lstlisting}
+def dewin(x): return np.fft.irfft(np.fft.rfft(x)/np.sinc(freq),n=len(x)).real
+\end{lstlisting}
+After pixel window deconvolution the binned map (green) closely matches the
+input signal (red). The same can not be said for the other estimators.
+Maximum likelihood, filter+bin with observation matrix debiasing and destriping
+(which are all equivalent in the limit I consider here) are strongly biased,
+with the signal only being recovered with 1/3 of its real amplitude.
+
+The situation is even worse for for filter+bin with simulation-based debiasing,
+as this suffers from an additional bias due to assuming that the Fourier modes
+are independent.\footnote{This additional bias disappears if the simulations
+have exactly the same statistical properties as the real signal we wish to
+recover.}
+
+\subsubsection{Explanation}
+To see why inaccuracies in modelling the signal at sub-pixel scales can bias
+the largest scales in the map, let us consider the example in figure~\ref{fig:nearest-neigh},
+where a detector measures a smooth, large-scale signal while moving across a few
+pixels. With a nearest-neighbor pointing matrix it is impossible to model this
+smooth signal: the model for each sample is simply that of the closest pixel,
+regardless of where inside that pixel it is. The model therefore looks like
+a staircase-like function in time domain.
+
+Given that we can't exactly match the signal, what is the best approximation?
+Let us consider two very different alterantives. \dfn{Model A}: The value in each pixel
+is the average of the samples that hits it, making the model curve trace the
+smooth signal as closely as it can. This is the green curve in figure~\ref{fig:nearest-neigh},
+and has the sawtooth-like residual shown with the blue curve.
+\dfn{Model B}: The value in each pixel is zero, and the residual is simply the signal itself.
+Model B seems like a terrible fit to the data, but under a reasonable noise model
+for a ground-based telescope, like the one shown in figure~\ref{fig:ps}, it
+will actually have a higher likelihood (lower $\chi^2 = r^TN^{-1}r$
+where $r$ is the residual) than model A. The reason is that while model B has a much
+larger residual than model A, model B's residual is smooth and hence has most of its
+power at low frequency in time domain where $N^{-1}$ is very small. Meanwhile, model A's
+residual extends to all frequencies due to its jagged nature, including the costly high
+frequencies. The actual maximum-likelihood solution will be intermediate between these
+two cases, sacrificing some but not all of the large-scale power in the model to make
+the residual smoother.
 
 \begin{figure}
 	\centering
@@ -339,6 +405,46 @@ for the different mapmaking methods for this toy example.
 	}
 	\label{fig:subpix-noerr}
 \end{figure}
+
+To demonstrate that the bias really is caused by subpixel errors,
+I repeated the simulation with a signal that follows the same nearest-neighbor
+behavior as the data model, thus eliminating subpixel errors. The
+result is shown in figure~\ref{fig:subpix-noerr}. The bias has disappeared
+in all methods except filter+bin with transfer-function based debiasing
+(which has an additional source of bias due to its assumption of a Fourier-diagonal
+filter response).
+
+\subsection{2D toy example}
+The 1D toy example is useful for understanding the origin of the bias, but
+it's unrealistic observing pattern makes it insufficient for exploring
+optimality/bias tradeoffs in the different models. I therefore made a larger
+toy example where a single detector scans at constant speed across a square
+patch, sampling $N_\text{scan} = 400$ equi-spaced rows with $N_\text{scan}$
+equi-spaced samples per row, followe by a column-wise scann the same patch,
+leading to a total cross-linked data set $N_\text{samp} = 2 N_\text{scan}^2 = 3200$
+samples long. This equi-spaced grid of samples was chosen to make it easy to
+simulate a signal directly onto the the samples without needing the complication
+of pixel-to-sample projection. These samples will then be mapped onto a
+square grid of pixels with a side length of $N_\text{side} = 100$ using
+the different mapmaking methods.
+
+For the signal I draw realizations from a CMB-like $1/l^2$ power spectrum
+with a Gaussian beam with standard deviation $\sigma=3$ pixels. Here $l$
+is the pixe-space wave-numbers, which I evaluate in the higher
+resolution sample space as
+\begin{lstlisting}
+ly = np.fft.fftfreq(N_scan)[:,None] * N_side/N_scan
+lx = np.fft.fftfreq(N_scan)[None,:] * N_side/N_scan
+l  = (ly**2+lx**2)**0.5
+\end{lstlisting}
+With this I can define the signal power spectrum $C_l = l^{-2}$ and beam $B_l = \exp(-l^2 \sigma^2/2)$,
+and draw signal realizations as
+\begin{lstlisting}
+signal_map = np.fft.ifft2(np.fft.fft2(np.random.standard_normal((N_scan,N_scan)))*Cl**0.5*Bl).real
+signal_tod = np.concatenate([signal_map.reshape(-1), signal_map.T.reshape(-1)])
+\end{lstlisting}
+The last step here takes into account that the simulated scanning pattern covers the
+field twice, first horizontally and then vertically.
 
 \begin{figure}
 	\centering

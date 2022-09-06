@@ -12,8 +12,8 @@ def func_to_mat(func, n):
 	return np.array([func(unitvec(n,i)) for i in range(n)]).T
 
 def dewin(x):
-	f  = np.fft.fftfreq(len(x))
-	return np.fft.ifft(np.fft.fft(x)/np.sinc(f)).real
+	f  = np.fft.rfftfreq(len(x))
+	return np.fft.irfft(np.fft.rfft(x)/np.sinc(f),n=len(x)).real
 
 def wrap(x): return np.concatenate([x,x[:1]])
 
