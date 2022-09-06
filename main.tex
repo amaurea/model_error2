@@ -13,11 +13,15 @@
 %\usepackage{bm}
 \usepackage{listings}
 \usepackage{hyperref}
+\usepackage{savesym}
+\savesymbol{splitbox}
+\usepackage[export]{adjustbox}
 
 \newcommand{\planck}{{\it Planck}}
 \newcommand{\wmap}{{\sl WMAP}}
 \newcommand{\cobe}{{\sl COBE}}
 \newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\vc}[1]{\begin{minipage}[c]{\linewidth}{\begin{center}#1\end{center}}\end{minipage}}
 
 \DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{9} % for bold
 \DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{9}  % for normal
@@ -445,6 +449,99 @@ signal_tod = np.concatenate([signal_map.reshape(-1), signal_map.T.reshape(-1)])
 \end{lstlisting}
 The last step here takes into account that the simulated scanning pattern covers the
 field twice, first horizontally and then vertically.
+
+For the noise I use a simple 1/f spectum $N(f) = 1 + (f/f_\text{knee})^\alpha$,
+with \lstinline{f = np.fft.rfftfreq(N_samp)}
+and the knee frequency $f_\text{knee}$ corresponding to 1/30th of the side length,
+$f_\text{knee} = 0.5\cdot 30/N_\text{scan}$, and with an atmosphere-like exponent
+$\alpha=-3.5$.
+
+The pixel coordinates of each sample is
+\begin{lstlisting}
+pix_pat1 = (np.mgrid[:N_scan,:N_scan]*N_side/N_scan).reshape(2,-1)
+pix_pat2 = pix_pat1[::-1]
+pix = np.concatenate([pix_pat1,pix_pat2],1)
+\end{lstlisting}
+which I use to build the nearest-neighbor pointing matrix
+\begin{lstlisting}
+iy, ix = np.floor(pix).astype(int)%N_side
+P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+ix)),shape=(N_samp,N_pix))
+\end{lstlisting}
+
+\begin{figure*}
+	\centering
+	\begin{closetabcols}
+		\begin{closetabrows}[3.6]
+		\begin{tabular}{>{\centering}m{13mm}cccccc}
+			& Signal nn & Signal lin & Noise nn & Noise lin & Total nn & Total lin \\
+		Binned &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_binned_nn_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_binned_lin_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_binned_nn_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_binned_lin_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_binned_nn_data_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_binned_lin_data_map.png} \\
+		ML &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_nn_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_lin_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_nn_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_lin_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_nn_data_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_lin_data_map.png} \\
+		\vc{ML  whiten $10^2$}&
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_2_nn_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_2_lin_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_2_nn_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_2_lin_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_nn_data_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_lin_data_map.png} \\
+		\vc{ML  whiten $10^4$}&
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_4_nn_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_4_lin_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_4_nn_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_4_lin_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_4_nn_data_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_4_lin_data_map.png} \\
+		\vc{ML  whiten $10^6$}&
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_6_nn_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_6_lin_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_6_nn_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_6_lin_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_6_nn_data_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_6_lin_data_map.png} \\
+		\vc{Destripe len~4 prior}&
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_004_nn_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_004_lin_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_004_nn_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_004_lin_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_004_nn_data_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_004_lin_data_map.png} \\
+		\vc{Destripe len~4 plain}&
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_004_nn_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_004_lin_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_004_nn_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_004_lin_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_004_nn_data_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_004_lin_data_map.png} \\
+		\vc{Destripe len~64 prior}&
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_064_nn_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_064_lin_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_064_nn_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_064_lin_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_064_nn_data_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_064_lin_data_map.png} \\
+		\vc{Destripe len~64 plain}&
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_064_nn_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_064_lin_signal_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_064_nn_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_064_lin_noise_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_064_nn_data_map.png} &
+		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_064_lin_data_map.png} \\
+	\end{tabular}
+	\end{closetabrows}
+	\end{closetabcols}
+\end{figure*}
+
 
 \begin{figure}
 	\centering

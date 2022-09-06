@@ -1,5 +1,6 @@
 import numpy as np, scipy, time
 import cg
+from pixell import utils, mpi
 
 def fmul(f,x):
 	if np.asarray(f).size == 1: return f*x
@@ -22,6 +23,7 @@ nside = 100
 nscan = nside*4
 npix  = nside**2
 nsim  = 100
+comm  = mpi.COMM_WORLD
 
 # We will simulate two crosslinked scanning patterns
 pix_pat1 = (np.mgrid[:nscan,:nscan]*nside/nscan).reshape(2,-1)
@@ -30,7 +32,7 @@ pix      = np.concatenate([pix_pat1,pix_pat2],1)
 nsamp    = pix.shape[1]
 
 # Build a nearest neighbor sparse pointing matrix
-iy, ix  = np.floor(pix+0.5).astype(int)%nside
+iy, ix  = np.floor(pix).astype(int)%nside
 P_nn    = scipy.sparse.csr_array((np.full(nsamp,1),(np.arange(nsamp),iy*nside+ix)),shape=(nsamp,npix))
 # Build a bilinear pointing matrix. Here a sample with coordinates
 # y,x has value
@@ -131,17 +133,20 @@ def mapmaker_destripe(tod, P, iNw=1, iNc=0, blen=1):
 
 def make_maps(tod, P, iN, iNw, iNc):
 	names, maps = [], []
-	names.append("binned"); maps.append(mapmaker_bin(tod, P))
-	names.append("ml");     maps.append(mapmaker_ml (tod, P, iN))
-	#for cap in range(1,7):
-	#	names.append("ml_cap_%d" % cap)
-	#	maps.append(mapmaker_ml(tod, P, np.maximum(iN, np.min(iN)*10**cap)))
-	#for blen in [1,4,16,64]:
-	#	names.append("destripe_prior_%03d" % blen)
-	#	maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=iNc, blen=blen))
-	#for blen in [1,4,16,64]:
-	#	names.append("destripe_plain_%03d" % blen)
-	#	maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=0,   blen=blen))
+	names.append("binned"); print(names[-1]); maps.append(mapmaker_bin(tod, P))
+	names.append("ml");     print(names[-1]); maps.append(mapmaker_ml (tod, P, iN))
+	for cap in range(1,7):
+		names.append("ml_cap_%d" % cap)
+		print(names[-1])
+		maps.append(mapmaker_ml(tod, P, np.maximum(iN, np.min(iN)*10**cap)))
+	for blen in [4,16,64]:
+		names.append("destripe_prior_%03d" % blen)
+		print(names[-1])
+		maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=iNc, blen=blen))
+	for blen in [1,4,16,64]:
+		names.append("destripe_plain_%03d" % blen)
+		print(names[-1])
+		maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=0,   blen=blen))
 	maps = np.array(maps)
 	return names, maps
 
@@ -189,7 +194,6 @@ pmats   = {"nn":P_nn, "lin":P_lin}
 pixwins = {"nn":calc_pixwin_nn(nside)/calc_pixwin_nn(nside,nscan/nside), "lin":calc_pixwin_lin(nside)}
 # The pixwin ratio is there to compensate for the limited sub-resolution
 
-#for pname in ["lin"]:
 for pname in ["nn", "lin"]:
 	np.random.seed(seed)
 	P      = pmats[pname]
@@ -197,7 +201,7 @@ for pname in ["nn", "lin"]:
 	sspecs = 0
 	nspecs = 0
 	nok    = 0
-	for si in range(nsim):
+	for si in range(comm.rank, nsim, comm.size):
 		print("P %-4s sim %3d" % (pname, si))
 		signal, signal_map = sim_signal(C, B, nscan)
 		# Compensate for change in fourier units between high-res and
@@ -224,42 +228,17 @@ for pname in ["nn", "lin"]:
 				## Evaluate model
 				#model = P.dot(smaps[ni].reshape(-1))
 				#np.savetxt("toy2d_%s_%s_signal_model.txt"   % (name, pname), np.array([signal, model]).T, fmt="%15.7e")
+	sspecs = utils.allreduce(sspecs, comm)
+	nspecs = utils.allreduce(nspecs, comm)
+	nok    = comm.allreduce(nok)
 	sspecs /= nok
 	nspecs /= nok
 	# Output mean signal and noise spectra
-	for ni, name in enumerate(names):
-		np.savetxt("toy2d_%s_%s_signal_ps.txt" % (name, pname), np.array([ls1d, sspecs[ni]]).T, fmt="%15.7e")
-		np.savetxt("toy2d_%s_%s_noise_ps.txt"  % (name, pname), np.array([ls1d, nspecs[ni]]).T, fmt="%15.7e")
+	if comm.rank == 0:
+		for ni, name in enumerate(names):
+			np.savetxt("toy2d_%s_%s_signal_ps.txt" % (name, pname), np.array([ls1d, sspecs[ni]]).T, fmt="%15.7e")
+			np.savetxt("toy2d_%s_%s_noise_ps.txt"  % (name, pname), np.array([ls1d, nspecs[ni]]).T, fmt="%15.7e")
 
 # Output theoretical spectrum on same ls as our measurements
-np.savetxt("toy2d_theory_ps.txt", np.array([ls1d, (ls1d/lnorm)**-2*np.exp(-ls1d**2*bsigma**2)]).T, fmt="%15.7e")
-
-
-#r = 10
-## Make destriped map
-#from pixell import enplot
-##map_destripe = mapmaker_destripe(data, P_near, iNw=iNw_destripe, iNc=iNc, blen=1)
-##enplot.write("test_destripe_mllim", enplot.plot(map_destripe, grid=False, upgrade=4))
-##map_destripe_lin = mapmaker_destripe(data, P_lin, iNw=iNw_destripe, iNc=iNc, blen=1)
-##enplot.write("test_destripe_mllim_lin", enplot.plot(map_destripe_lin, grid=False, upgrade=4))
-##map_destripe = mapmaker_destripe(data, P_near, iNw=iNw_destripe, blen=1)
-##enplot.write("test_destripe_binlim", enplot.plot(map_destripe, grid=False, upgrade=4))
-##map_destripe_lin = mapmaker_destripe(data, P_lin, iNw=iNw_destripe, blen=1)
-##enplot.write("test_destripe_binlim_lin", enplot.plot(map_destripe_lin, grid=False, upgrade=4))
-#map_destripe = mapmaker_destripe(data, P_near, iNw=iNw_destripe, iNc=iNc, blen=1)
-#enplot.write("test_destripe_pri1", enplot.plot(map_destripe, grid=False, upgrade=4, range=r))
-#map_destripe_lin = mapmaker_destripe(data, P_lin, iNw=iNw_destripe, iNc=iNc, blen=1)
-#enplot.write("test_destripe_pri1_lin", enplot.plot(map_destripe_lin, grid=False, upgrade=4, range=r))
-#
-#map_binned     = mapmaker_bin_near(data, P_near)
-#map_binned_lin = mapmaker_bin(data, P_lin)
-#
-#map_ml     = mapmaker_ml(data, P_near, iN)
-#map_ml_lin = mapmaker_ml(data, P_lin,  iN)
-#
-#enplot.write("test",        enplot.plot(signal_map, grid=False, range=r))
-#enplot.write("test_binned", enplot.plot(map_binned, grid=False, upgrade=4, range=r))
-#enplot.write("test_binned_lin", enplot.plot(map_binned_lin, grid=False, upgrade=4, range=r))
-#enplot.write("test_ml",     enplot.plot(map_ml, grid=False, upgrade=4, range=r))
-#enplot.write("test_ml_lin", enplot.plot(map_ml_lin, grid=False, upgrade=4, range=r))
-#1/0
+if comm.rank == 0:
+	np.savetxt("toy2d_theory_ps.txt", np.array([ls1d, (ls1d/lnorm)**-2*np.exp(-ls1d**2*bsigma**2)]).T, fmt="%15.7e")
