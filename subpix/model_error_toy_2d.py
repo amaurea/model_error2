@@ -22,7 +22,7 @@ seed = 0
 nside = 100
 nscan = nside*4
 npix  = nside**2
-nsim  = 100
+nsim  = 1
 comm  = mpi.COMM_WORLD
 
 # We will simulate two crosslinked scanning patterns
@@ -32,7 +32,7 @@ pix      = np.concatenate([pix_pat1,pix_pat2],1)
 nsamp    = pix.shape[1]
 
 # Build a nearest neighbor sparse pointing matrix
-iy, ix  = np.floor(pix).astype(int)%nside
+iy, ix  = np.floor(pix+0.5).astype(int)%nside
 P_nn    = scipy.sparse.csr_array((np.full(nsamp,1),(np.arange(nsamp),iy*nside+ix)),shape=(nsamp,npix))
 # Build a bilinear pointing matrix. Here a sample with coordinates
 # y,x has value
@@ -79,22 +79,11 @@ B      = np.exp(-0.5*l**2*bsigma**2)
 
 def sim_signal(C, B, nscan):
 	signal_map = np.fft.ifft2(np.fft.fft2(np.random.standard_normal((nscan,nscan)))*C**0.5*B).real
-	#print("FIXME 1d")
-	#signal_map[:] = np.mean(signal_map,0)[None,:]
 	signal = np.concatenate([signal_map.reshape(-1), signal_map.T.reshape(-1)])
 	return signal, signal_map
 def sim_noise(iN, nsamp):
 	noise  = fmul(iN**-0.5, np.random.standard_normal(nsamp))
-	#noise -= np.mean(noise)
 	return noise
-
-#signal_map = np.fft.ifft2(np.fft.fft2(np.random.standard_normal((nscan,nscan)))*C**0.5*B).real
-#signal = np.concatenate([signal_map.reshape(-1), signal_map.T.reshape(-1)])
-## Let's make some noise too
-#noise  = fmul(iN**-0.5, np.random.standard_normal(nsamp))
-#noise -= np.mean(noise)
-#
-#data   = signal+noise
 
 # We need iterative methods to solve these. Scipy's conjugate gradient implementation
 # has some issues (though they might not be relevant for this simple case), so let's
@@ -138,12 +127,12 @@ def make_maps(tod, P, iN, iNw, iNc):
 	for cap in range(1,7):
 		names.append("ml_cap_%d" % cap)
 		print(names[-1])
-		maps.append(mapmaker_ml(tod, P, np.maximum(iN, np.min(iN)*10**cap)))
+		maps.append(mapmaker_ml(tod, P, np.minimum(iN, np.max(iN)/10**cap)))
 	for blen in [4,16,64]:
 		names.append("destripe_prior_%03d" % blen)
 		print(names[-1])
 		maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=iNc, blen=blen))
-	for blen in [1,4,16,64]:
+	for blen in [4,16,64]:
 		names.append("destripe_plain_%03d" % blen)
 		print(names[-1])
 		maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=0,   blen=blen))
@@ -167,15 +156,6 @@ def calc_pixwin_raw(n): return 1
 def calc_pixwin_nn(n, scale=1):
 	s = np.sinc(np.fft.fftfreq(n)/scale)**2
 	return s[:,None]*s[None,:]
-#def calc_pixwin_lin(n):
-#	s = 3/(2+np.cos(2*np.pi*np.fft.fftfreq(n)))
-#	return s[:,None]*s[None,:]
-#def calc_pixwin_lin(n):
-#	return 1
-#	q = 2*np.pi*np.fft.fftfreq(n)
-#	s = 1/(4/q**2*(1-np.cos(q))**2)
-#	s[~np.isfinite(s)] = 1
-#	return s[:,None]*s[None,:]
 def calc_pixwin_lin(n):
 	fout = np.abs(np.fft.fftfreq(n))
 	s    = np.interp(fout, freq_lin_1d, tfun_lin_1d)**2
@@ -195,7 +175,6 @@ pixwins = {"nn":calc_pixwin_nn(nside)/calc_pixwin_nn(nside,nscan/nside), "lin":c
 # The pixwin ratio is there to compensate for the limited sub-resolution
 
 for pname in ["nn", "lin"]:
-	np.random.seed(seed)
 	P      = pmats[pname]
 	pixwin = pixwins[pname]
 	sspecs = 0
@@ -203,6 +182,7 @@ for pname in ["nn", "lin"]:
 	nok    = 0
 	for si in range(comm.rank, nsim, comm.size):
 		print("P %-4s sim %3d" % (pname, si))
+		np.random.seed(seed*nsim+si)
 		signal, signal_map = sim_signal(C, B, nscan)
 		# Compensate for change in fourier units between high-res and
 		# target grids. This step would not be necessary if I were more

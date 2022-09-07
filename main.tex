@@ -23,6 +23,8 @@
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\vc}[1]{\begin{minipage}[c]{\linewidth}{\begin{center}#1\end{center}}\end{minipage}}
 
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+
 \DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{9} % for bold
 \DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{9}  % for normal
 \DeclareRobustCommand{\hlblack}[1]{{\sethlcolor{black}\hl{#1}}}
@@ -471,77 +473,108 @@ P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+
 \begin{figure*}
 	\centering
 	\begin{closetabcols}
-		\begin{closetabrows}[3.6]
-		\begin{tabular}{>{\centering}m{13mm}cccccc}
-			& Signal nn & Signal lin & Noise nn & Noise lin & Total nn & Total lin \\
-		Binned &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_binned_nn_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_binned_lin_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_binned_nn_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_binned_lin_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_binned_nn_data_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_binned_lin_data_map.png} \\
+		\begin{tabular}{C{13mm}ccm{1mm}ccC{14mm}}
+			& Signal & Noise & & Noise & Signal & \\
+		Input &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_input_signal_map.png} &
+		& &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_binned_nn_noise_map.png} &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_binned_nn_signal_map.png} &
+		Binned \\[13.6mm]
 		ML &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_nn_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_lin_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_nn_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_lin_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_nn_data_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_lin_data_map.png} \\
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_ml_nn_signal_map.png} &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_ml_nn_noise_map.png} & &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_destripe_prior_004_nn_noise_map.png} &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_destripe_prior_004_nn_signal_map.png} &
+		\vc{Destripe len~4 prior}\\[13.6mm]
+		\vc{ML  whiten $10^1$}&
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_ml_cap_1_nn_signal_map.png} &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_ml_cap_1_nn_noise_map.png} & &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_destripe_plain_004_nn_noise_map.png} &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_destripe_plain_004_nn_signal_map.png} &
+		\vc{Destripe len~4 plain}\\[13.6mm]
 		\vc{ML  whiten $10^2$}&
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_2_nn_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_2_lin_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_2_nn_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_2_lin_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_nn_data_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_lin_data_map.png} \\
-		\vc{ML  whiten $10^4$}&
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_4_nn_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_4_lin_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_4_nn_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_4_lin_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_4_nn_data_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_4_lin_data_map.png} \\
-		\vc{ML  whiten $10^6$}&
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_6_nn_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_6_lin_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_6_nn_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_6_lin_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_6_nn_data_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_ml_cap_6_lin_data_map.png} \\
-		\vc{Destripe len~4 prior}&
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_004_nn_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_004_lin_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_004_nn_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_004_lin_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_004_nn_data_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_004_lin_data_map.png} \\
-		\vc{Destripe len~4 plain}&
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_004_nn_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_004_lin_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_004_nn_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_004_lin_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_004_nn_data_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_004_lin_data_map.png} \\
-		\vc{Destripe len~64 prior}&
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_064_nn_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_064_lin_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_064_nn_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_064_lin_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_064_nn_data_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_prior_064_lin_data_map.png} \\
-		\vc{Destripe len~64 plain}&
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_064_nn_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_064_lin_signal_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_064_nn_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_064_lin_noise_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_064_nn_data_map.png} &
-		\includegraphics[width=20mm,valign=m]{subpix/toy2d_destripe_plain_064_lin_data_map.png} \\
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_ml_cap_2_nn_signal_map.png} &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_ml_cap_2_nn_noise_map.png} & &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_destripe_prior_064_nn_noise_map.png} &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_destripe_prior_064_nn_signal_map.png} &
+		\vc{Destripe len~64 prior}\\[13.6mm]
+		\vc{ML  whiten $10^3$}&
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_ml_cap_3_nn_signal_map.png} &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_ml_cap_3_nn_noise_map.png} & &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_destripe_plain_064_nn_noise_map.png} &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_destripe_plain_064_nn_signal_map.png} &
+		\vc{Destripe len~64 plain}\\[13.6mm]
+		\vc{ML bilin} &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_ml_lin_signal_map.png} &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_ml_lin_noise_map.png} & &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_destripe_prior_004_lin_noise_map.png} &
+		\includegraphics[width=30mm,valign=m]{subpix/toy2d_destripe_prior_004_lin_signal_map.png} &
+		\vc{Destripe len~4 prior bilin}
 	\end{tabular}
-	\end{closetabrows}
 	\end{closetabcols}
+	\caption{
+		Example signal and noise maps for the different mapmaking methods.
+		The top left map is the input signal, which is directly evaluated
+		at 4x higher resolution than what is used for reconstructing the output maps.
+		All output maps were built assuming a nearest neighbor pointing matrix,
+		except for the last row where a bilinear pointing matrix was used.
+		The binned map is bias-free but has uselessly high noise. Maximum likelihood (ML)
+		and destriping with short baselengths (with and without baseline amplitude prior,
+		which appears to make little difference here)
+		are all low-noise but biased on large scales. This bias goes away as the noise model
+		is artificially whitened (for ML) or the baseline length is increased (for destriping),
+		but this comes at a cost of increased noise on all scales.
+		Bilinear mapmaking (last row) instead avoids the bias by eliminating most of the model error.
+		It can be difficult to judge how significant the bias and noise levels are from
+		these images. See figures~\ref{fig:2d-bias} and \ref{fig:2d-noise} for easier to
+		interpret comparisons of the signal and noise power spectra respectively.
+	}
+	\label{fig:2d-maps}
 \end{figure*}
 
+\begin{figure}
+	\centering
+	\hspace*{-5mm}\includegraphics[width=1.10\columnwidth]{subpix/model_error_toy_2d.pdf}
+	\caption{
+		Comparison of the subpixel bias of different mapmaking methods.
+		\dfn{bin}: Binned map. Unbiased except for the upturn near the Nyquist
+		frequency, which I interpret as aliasing.
+		\dfn{ML}: Maximum-likelihood. Highly biased at large scales.
+		\dfn{ML wX}: Maximum-likelihood with the noise model overestimating the white
+		noise power by a factor of $10^X$, as a bias mitigation strategy. A whiter
+		noise model reduces the bias, but as fig.~\ref{fig:2d-noise} shows, the cost
+		is too high to be practical.
+		\dfn{ML lin}: ML with a bilinear pointing matrix instead of a nearest-neighbor one.
+		Unbiased like the binned map while retaining optimal noise.
+		\dfn{DS X}: Destriping with a baseline length of X samples. The
+		noise is correlated on scales longer than about 4 pixels corresponding
+		to 16 samples, so $X\lesssim 16$ would be a natural choice. Bias reduces
+		with baseline length.
+		\dfn{DS+ X}: Destriping with baseline X and an amplitude prior.
+		Only noticably different from plain destriping for the shortest baselines.
+		\dfn{DS+ 4 lin}: Destriping with a bilinear pointing matrix eliminates
+		the bias at large scales, though there is a small bias at smaller scales.
+	}
+	\label{fig:2d-bias}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\hspace*{-5mm}\includegraphics[width=1.10\columnwidth]{subpix/model_error_toy_2d_noise.pdf}
+	\caption{
+		Comparison of the optimality of different mapmaking methods, measured
+		as the the debiased noise power spectrum for each method relative
+		to that of bilinear maximum-likelihood mapmaking. See figure~\ref{fig:2d-bias}
+		for the bias of each method and the definition of the legend terms.
+		Note the logarithmic vertical axis, and that binned case was divided by $10^3$
+		to bring it partially inside the plot bounds.
+		It's clear that naive bias mitigation
+		methods like artificially whitening the noise model or increasing the
+		baseline length are too costly to be practical.
+	}
+	\label{fig:2d-noise}
+\end{figure}
 
 \begin{figure}
 	\centering

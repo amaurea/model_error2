@@ -1,16 +1,48 @@
 set xlabel "Wavenumber (k)"   offset 0,0.6
-set ylabel "Fraction of power retained" offset 0.6,0
+set ylabel "Fraction of power retained" offset 0.8,0
 set xrange [0:0.5]
 set yrange [0:1.2]
-set key above width -2
-set dt 2 (5,10)
-set dt 3 (0.01,10,5,0.01)
-scale(y,x) = x == 0 ? 0.0/0 : y*x**2
+set key above width -4 samplen 1 font ",12"
+set dt 2 (5,3)
+cut0(x,y) = x == 0 ? 0.0/0 : y
 
-set term svg size 600,400 lw 2
+# Signal
+set term svg size 600,400 lw 2 font ",16"
 set output "model_error_toy_2d.svg"
 plot \
-	"<paste toy2d_theory_ps.txt toy2d_binned_nn_signal_ps.txt"  u 1:($4/$2) w l lc 1 dt 1 title "bin.nn", \
-	"<paste toy2d_theory_ps.txt toy2d_ml_nn_signal_ps.txt"      u 1:($4/$2) w l lc 2 dt 1 title "ml.nn", \
-	"<paste toy2d_theory_ps.txt toy2d_binned_lin_signal_ps.txt" u 1:($4/$2) w l lc 3 dt 2 title "bin.lin", \
-	"<paste toy2d_theory_ps.txt toy2d_ml_lin_signal_ps.txt"     u 1:($4/$2) w l lc 4 dt 3 title "ml.lin"
+	"<paste toy2d_theory_ps.txt toy2d_binned_nn_signal_ps.txt"   u 1:(cut0($1,$4/$2)) w l lw 4 lc 1 dt 1 title "bin", \
+	"<paste toy2d_theory_ps.txt toy2d_ml_nn_signal_ps.txt"       u 1:(cut0($1,$4/$2)) w l lw 2 lc rgb "#0000ff" title "ML", \
+	"<paste toy2d_theory_ps.txt toy2d_ml_cap_1_nn_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l lc rgb "#8888ff" title "ML w1", \
+	"<paste toy2d_theory_ps.txt toy2d_ml_cap_2_nn_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l lc rgb "#aaaaff" title "ML w2", \
+	"<paste toy2d_theory_ps.txt toy2d_ml_cap_3_nn_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l lc rgb "#ddddff" title "ML w3", \
+	"<paste toy2d_theory_ps.txt toy2d_ml_lin_signal_ps.txt"      u 1:(cut0($1,$4/$2)) w l lw 3 lc rgb "#aa00ff" title "ML lin" , \
+	"<paste toy2d_theory_ps.txt toy2d_destripe_plain_004_nn_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l lc rgb "#ffaa00" title "DS 4" , \
+	"<paste toy2d_theory_ps.txt toy2d_destripe_prior_004_nn_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l dt 2 lc rgb "#ffaa00" title "DS+ 4" , \
+	"<paste toy2d_theory_ps.txt toy2d_destripe_plain_016_nn_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l lc rgb "#ffcc88" title "DS 16" , \
+	"<paste toy2d_theory_ps.txt toy2d_destripe_prior_016_nn_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l dt 2 lc rgb "#ffcc88" title "DS+ 16" , \
+	"<paste toy2d_theory_ps.txt toy2d_destripe_plain_064_nn_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l lc rgb "#ffddaa" title "DS 64" , \
+	"<paste toy2d_theory_ps.txt toy2d_destripe_prior_064_nn_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l dt 2 lc rgb "#ffddaa" title "DS+ 64" , \
+	"<paste toy2d_theory_ps.txt toy2d_destripe_prior_004_lin_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l lc rgb "#00ff00" title "DS+ 4 lin" , \
+	-1 title ""
+
+# Noise
+set output "model_error_toy_2d_noise.svg"
+set yrange [0.9:200]
+set format y "10^{%T}"
+set ylabel "Relative debiased noise power" offset 0.9,0
+set logscale y
+plot \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_binned_nn_signal_ps.txt              toy2d_ml_lin_noise_ps.txt toy2d_binned_nn_noise_ps.txt"   u 1:(cut0($1,$8/$6/($4/$2))/1000) w l lw 2 lc 1 dt 1 title "bin/10^3", \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_ml_nn_signal_ps.txt                  toy2d_ml_lin_noise_ps.txt toy2d_ml_nn_noise_ps.txt"       u 1:(cut0($1,$8/$6/($4/$2))) w l lw 2 lc rgb "#0000ff" title "ML", \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_ml_cap_1_nn_signal_ps.txt            toy2d_ml_lin_noise_ps.txt toy2d_ml_cap_1_nn_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l lc rgb "#8888ff" title "ML w1", \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_ml_cap_2_nn_signal_ps.txt            toy2d_ml_lin_noise_ps.txt toy2d_ml_cap_2_nn_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l lc rgb "#aaaaff" title "ML w2", \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_ml_cap_3_nn_signal_ps.txt            toy2d_ml_lin_noise_ps.txt toy2d_ml_cap_3_nn_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l lc rgb "#ddddff" title "ML w3", \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_ml_lin_signal_ps.txt                 toy2d_ml_lin_noise_ps.txt toy2d_ml_lin_noise_ps.txt"      u 1:(cut0($1,$8/$6/($4/$2))) w l lw 2 lc rgb "#aa00ff" title "ML lin" , \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_destripe_plain_004_nn_signal_ps.txt  toy2d_ml_lin_noise_ps.txt toy2d_destripe_plain_004_nn_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l lc rgb "#ffaa00" title "DS 4" , \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_destripe_prior_004_nn_signal_ps.txt  toy2d_ml_lin_noise_ps.txt toy2d_destripe_prior_004_nn_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l dt 2 lc rgb "#ffaa00" title "DS+ 4" , \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_destripe_plain_016_nn_signal_ps.txt  toy2d_ml_lin_noise_ps.txt toy2d_destripe_plain_016_nn_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l lc rgb "#ffcc88" title "DS 16" , \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_destripe_prior_016_nn_signal_ps.txt  toy2d_ml_lin_noise_ps.txt toy2d_destripe_prior_016_nn_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l dt 2 lc rgb "#ffcc88" title "DS+ 16" , \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_destripe_plain_064_nn_signal_ps.txt  toy2d_ml_lin_noise_ps.txt toy2d_destripe_plain_064_nn_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l lc rgb "#ffddaa" title "DS 64" , \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_destripe_prior_064_nn_signal_ps.txt  toy2d_ml_lin_noise_ps.txt toy2d_destripe_prior_064_nn_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l dt 2 lc rgb "#ffddaa" title "DS+ 64" , \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_destripe_prior_004_lin_signal_ps.txt toy2d_ml_lin_noise_ps.txt toy2d_destripe_prior_004_lin_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l lc rgb "#00ff00" title "DS+ 4 lin" , \
+	-1 title ""
