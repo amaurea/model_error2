@@ -1,4 +1,4 @@
-set xlabel "Wavenumber (k)"   offset 0,0.6
+set xlabel "Wavenumber (l)"   offset 0,0.6
 set ylabel "Fraction of power retained" offset 0.8,0
 set xrange [0:0.5]
 set yrange [0:1.2]
