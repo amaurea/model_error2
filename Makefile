@@ -1,4 +1,4 @@
-figs = subpix/model_error_toy.pdf subpix/model_resids.pdf subpix/model_error_toy_noerr.pdf  subpix/model_resid_cumps.pdf subpix/ps.pdf common_mode/common.pdf nearest_neigh/path.pdf nearest_neigh/vals.pdf subpix/model_error_toy_2d.pdf subpix/model_error_toy_2d_noise.pdf
+figs = subpix/model_error_toy.pdf subpix/model_resids.pdf subpix/model_error_toy_noerr.pdf  subpix/model_resid_cumps.pdf subpix/ps.pdf common_mode/common.pdf nearest_neigh/path.pdf nearest_neigh/vals.pdf subpix/model_error_toy_2d.pdf subpix/model_error_toy_2d_noise.pdf subpix/tfun_lin_1d.pdf
 ps_files := $(wildcard subpix/toy2d*ps.txt)
 
 main.pdf: main.tex refs.bib $(figs) FORCE
@@ -19,7 +19,7 @@ subpix/model_error_toy.svg subpix/model_resid.svg subpix/model_resids.svg subpix
 .subpix_plot_2d: subpix/plot_2d.gpi $(ps_files)
 	cd subpix; gnuplot plot_2d.gpi
 	touch .subpix_plot_2d
-subpix/model_error_toy_2d.svg subpix/model_error_toy_2d_noise.svg: .subpix_plot_2d
+subpix/model_error_toy_2d.svg subpix/model_error_toy_2d_noise.svg subpix/tfun_lin_1d.svg: .subpix_plot_2d
 	touch $@
 .common_run: common_mode/common_mode_test.py
 	cd common_mode; python common_mode_test.py

@@ -543,6 +543,8 @@ P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+
 		the (very noisy) longest destriping baseline. This bias disappears (ML)
 		or is greatly reduced (DS) when switching to bilinear interpolation in the pointing matrix.
 		See figure~\ref{fig:2d-noise} for the corresponding noise spectra.
+		I interpret upturn at $l>0.4$ (close to the Nyquist frequency) as aliasing, which
+		is expected and not relevant for the biases we consider here.
 	}
 	\label{fig:2d-bias}
 \end{figure}
@@ -605,6 +607,57 @@ All but the longest-baseline destriped maps are also strongly biased,
 with the shortest baseline being considerably worse than ML for almost all scales.
 Much like we saw with the ML variants, the less biased destriping versions
 come at a high cost in noise.
+
+\subsubsection{Eliminating subpixel errors}
+There will be no subpixel errors in the limit of infinitely small pixels,
+so it's tempting to simply reduce the pixel size to solve the problem. This
+does work, but since subpixel errors are proportional to $|\nabla s \cdot \vec \Delta|$,
+where $s$ is the true, smooth signal on the sky and $\vec \Delta = [\Delta_x,\Delta_y]$
+is the pixel shape, the improvement is only first order in the pixel side length.
+A much more feasible solution is to instead improve the subpixel handling in the
+pointing matrix. Going from nearest neighbor to bilinear interpolation is enough
+to practically eliminate subpixel errors. We can implement this in the toy example
+by defining
+\begin{lstlisting}
+pix_left = np.floor(pix).astype(int)
+ry, rx  = pix-pix_left
+iy1,ix1 = pix_left % N_side
+iy2,ix2 = (pix_left+1)% N_side
+weights = np.concatenate([
+		(1-ry)*(1-rx), (1-ry)*rx,
+		ry    *(1-rx), ry    *rx])
+samps   = np.tile(np.arange(N_samp),4)
+inds    = np.concatenate([
+	iy1*N_side+ix1, iy1*N_side+ix2,
+	iy2*N_side+ix1, iy2*N_side+ix2])
+P_lin = scipy.sparse.csr_array((weights,(samps,inds)),shape=(N_samp,N_pix))
+\end{lstlisting}
+Bilinear mapmaking results in a different pixel window than
+the standard \lstinline{pixwin_nn = sinc(l_y)[:,None]*sinc(l_x)[None,:]}
+of nearest neighbor mapmaking. I measure this empirically using simulations
+of simple binned mapmaking, and find it to have the separable form
+\lstinline{pixwin_lin = linwin1d(l_y)[:,None]*linwin1d(l_x)[None,:]},
+with \lstinline{linwin1d} being plotted in figure~\ref{fig:linwin1d}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\columnwidth]{subpix/tfun_lin_1d.pdf}
+	\caption{Comparison of the 1D pixel window for nearest neighbor
+	mapmaking (red, $sinc(l)$) and linear mapmaking (blue). The 2D pixel window
+	is the outer product of the 1D one along each axis. The pixel
+	windows model the response of the fourier coefficients to
+	binned (unweighted) mapmaking. Square it to get the effect on
+	the power spectrum.}
+	\label{fig:linwin1d}
+\end{figure}
+
+Since each sample in bilinear mapmaking gets contributions from the four closest pixels,
+the pointing matrix is about four times slower than the standard nearest neighbor
+version. However, as shown in figures~\ref{fig:2d-bias} and \ref{fig:2d-noise}
+this cost is worh it, with bilinear maximum-likelihood mapmaking being bias-free
+and even lower noise than standard ML. The bias is also greatly reduced for
+destriping, but not eliminated.
+
 
 
 \begin{figure}
