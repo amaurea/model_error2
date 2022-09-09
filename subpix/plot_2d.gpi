@@ -4,6 +4,7 @@ set xrange [0:0.5]
 set yrange [0:1.2]
 set key above width -4 samplen 1 font ",12"
 set dt 2 (5,3)
+set dt 3 (3,2)
 cut0(x,y) = x == 0 ? 0.0/0 : y
 sinc(x) = abs(x) < 1e-6 ? 1 : sin(pi*x)/(pi*x)
 
@@ -24,11 +25,13 @@ plot \
 	"<paste toy2d_theory_ps.txt toy2d_destripe_plain_064_nn_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l lc rgb "#ffddaa" title "DS 64" , \
 	"<paste toy2d_theory_ps.txt toy2d_destripe_prior_064_nn_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l dt 2 lc rgb "#ffddaa" title "DS+ 64" , \
 	"<paste toy2d_theory_ps.txt toy2d_destripe_prior_004_lin_signal_ps.txt" u 1:(cut0($1,$4/$2)) w l lc rgb "#00ff00" title "DS+ 4 lin" , \
+	"<paste toy2d_theory_ps.txt toy2d_binned_nn_signal_ps.txt toy2d_fbinsim_nn_signal_ps.txt toy2d_fbin_nn_signal_ps.txt" u 1:(cut0($1,$8/($6/$4)/$2)) w l lc rgb "#ff0000" dt 2 lw 2 title "FB" , \
+	"<paste toy2d_theory_ps.txt toy2d_binned_lin_signal_ps.txt toy2d_fbinsim_lin_signal_ps.txt toy2d_fbin_lin_signal_ps.txt" u 1:(cut0($1,$8/($6/$4)/$2)) w l lc rgb "#ff0000" dt 3 title "FB lin" , \
 	-1 title ""
 
 # Noise
 set output "model_error_toy_2d_noise.svg"
-set yrange [0.9:200]
+set yrange [0.8:200]
 set format y "10^{%T}"
 set ylabel "Relative debiased noise power" offset 0.9,0
 set logscale y
@@ -46,7 +49,15 @@ plot \
 	"<paste toy2d_ml_lin_signal_ps.txt toy2d_destripe_plain_064_nn_signal_ps.txt  toy2d_ml_lin_noise_ps.txt toy2d_destripe_plain_064_nn_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l lc rgb "#ffddaa" title "DS 64" , \
 	"<paste toy2d_ml_lin_signal_ps.txt toy2d_destripe_prior_064_nn_signal_ps.txt  toy2d_ml_lin_noise_ps.txt toy2d_destripe_prior_064_nn_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l dt 2 lc rgb "#ffddaa" title "DS+ 64" , \
 	"<paste toy2d_ml_lin_signal_ps.txt toy2d_destripe_prior_004_lin_signal_ps.txt toy2d_ml_lin_noise_ps.txt toy2d_destripe_prior_004_lin_noise_ps.txt" u 1:(cut0($1,$8/$6/($4/$2))) w l lc rgb "#00ff00" title "DS+ 4 lin" , \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_fbin_nn_signal_ps.txt toy2d_fbinsim_nn_signal_ps.txt toy2d_binned_nn_signal_ps.txt toy2d_ml_lin_noise_ps.txt toy2d_fbin_nn_noise_ps.txt" u 1:(cut0($1,$12/($6/$8)/($4/($6/$8)/$2)/$10)) w l lw 2 dt 2 lc rgb "#ff0000" title "FB", \
+	"<paste toy2d_ml_lin_signal_ps.txt toy2d_fbin_lin_signal_ps.txt toy2d_fbinsim_lin_signal_ps.txt toy2d_binned_lin_signal_ps.txt toy2d_ml_lin_noise_ps.txt toy2d_fbin_lin_noise_ps.txt" u 1:(cut0($1,$12/($6/$8)/($4/($6/$8)/$2)/$10)) w l lw 1 dt 3 lc rgb "#ff0000" title "FB lin", \
 	-1 title ""
+
+# computing these ratios in gnuplot is messy, but oh well
+# For FB noise I want fbin_noise/fbin_bias / mllin_noise
+# fbin_bias = fbin_signal/tfun/mllin_signal
+# tfun = fbinsim_signal/binned_signal
+# So in total: fbin_noise/(fbin_signal/(fbinsim_signal/binned_signal)/mllin_signal)/mllin_noise
 
 # Transfun
 unset logscale y

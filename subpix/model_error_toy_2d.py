@@ -22,7 +22,7 @@ seed = 0
 nside = 100
 nscan = nside*4
 npix  = nside**2
-nsim  = 1
+nsim  = 400
 comm  = mpi.COMM_WORLD
 
 # We will simulate two crosslinked scanning patterns
@@ -97,6 +97,8 @@ def mapmaker_ml(tod, P, iN):
 	return solver.x.reshape(nside,nside)
 def mapmaker_bin(tod, P):
 	return scipy.sparse.linalg.spsolve(P.T.dot(P), P.T.dot(tod)).reshape(nside, nside)
+def mapmaker_filter_bin(tod, P, F):
+	return scipy.sparse.linalg.spsolve(P.T.dot(P), P.T.dot(fmul(F,tod))).reshape(nside, nside)
 #def mapmaker_bin_simple(tod, P):
 #	return (P.T.dot(tod)/P.T.dot(P).diagonal()).reshape(nside,nside)
 def mapmaker_destripe(tod, P, iNw=1, iNc=0, blen=1):
@@ -122,20 +124,26 @@ def mapmaker_destripe(tod, P, iNw=1, iNc=0, blen=1):
 
 def make_maps(tod, P, iN, iNw, iNc):
 	names, maps = [], []
-	names.append("binned"); print(names[-1]); maps.append(mapmaker_bin(tod, P))
-	names.append("ml");     print(names[-1]); maps.append(mapmaker_ml (tod, P, iN))
-	for cap in range(1,7):
-		names.append("ml_cap_%d" % cap)
-		print(names[-1])
-		maps.append(mapmaker_ml(tod, P, np.minimum(iN, np.max(iN)/10**cap)))
-	for blen in [4,16,64]:
-		names.append("destripe_prior_%03d" % blen)
-		print(names[-1])
-		maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=iNc, blen=blen))
-	for blen in [4,16,64]:
-		names.append("destripe_plain_%03d" % blen)
-		print(names[-1])
-		maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=0,   blen=blen))
+	#names.append("binned"); print(names[-1]); maps.append(mapmaker_bin(tod, P))
+	#names.append("ml");     print(names[-1]); maps.append(mapmaker_ml (tod, P, iN))
+	# Instead of implementing all the sims in the mapmaker_filter_bin step, we split
+	# it into two parts: Just the filter+bin part and a simulation step. With this
+	# we can get the tfun as fbinsim/binned. The point of this is to avoid having
+	# a sim-loop inside a sim-loop
+	names.append("fbin");    print(names[-1]); maps.append(mapmaker_filter_bin(tod, P, iN))
+	names.append("fbinsim"); print(names[-1]); maps.append(mapmaker_filter_bin(P.dot(mapmaker_bin(tod,P).reshape(-1)), P, iN))
+	#for cap in range(1,7):
+	#	names.append("ml_cap_%d" % cap)
+	#	print(names[-1])
+	#	maps.append(mapmaker_ml(tod, P, np.minimum(iN, np.max(iN)/10**cap)))
+	#for blen in [4,16,64]:
+	#	names.append("destripe_prior_%03d" % blen)
+	#	print(names[-1])
+	#	maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=iNc, blen=blen))
+	#for blen in [4,16,64]:
+	#	names.append("destripe_plain_%03d" % blen)
+	#	print(names[-1])
+	#	maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=0,   blen=blen))
 	maps = np.array(maps)
 	return names, maps
 

@@ -585,6 +585,11 @@ I will investigate 5 classes of nearest-neighbor maps:
 		can be compared with the noise knee wavelength of 6.7 pixels $\approx$ 27 samples.
 	\item \dfn{DS+ $X$}: Like DS $X$, but uses the correlated part of the maximum-likelihood
 		noise model as an amplitude prior ($C_a$ in equation~\ref{eq:destripe}).
+	\item \dfn{FB}: Filter+bin mapmaking where a transfer function is measured using
+		simulations based on the data model, and this is deconvolved when measuring
+		the power spectrum. This is the standard approach for filter+bin mapmaking.
+		In this case only the power spectrum is debiased, not the map, so I don't
+		show an example map for this case.
 \end{enumerate}
 
 Since all the mapmaking methods are linear, the signal and noise can be mapped separately.
@@ -606,7 +611,9 @@ cases, but this still seems like a very expensive bias mitigation method.
 All but the longest-baseline destriped maps are also strongly biased,
 with the shortest baseline being considerably worse than ML for almost all scales.
 Much like we saw with the ML variants, the less biased destriping versions
-come at a high cost in noise.
+come at a high cost in noise. Finally, the filter+bin map is biased even after simulation-based
+debiasing due to the simulations not capturing the subpixel behavior of the real data.
+Both the bias and noise levels are the same as maximum-likelihood in this example.
 
 \subsubsection{Eliminating subpixel errors}
 There will be no subpixel errors in the limit of infinitely small pixels,
@@ -643,7 +650,7 @@ with \lstinline{linwin1d} being plotted in figure~\ref{fig:linwin1d}.
 	\centering
 	\includegraphics[width=\columnwidth]{subpix/tfun_lin_1d.pdf}
 	\caption{Comparison of the 1D pixel window for nearest neighbor
-	mapmaking (red, $sinc(l)$) and linear mapmaking (blue). The 2D pixel window
+	mapmaking (red, $\text{sinc}(l)$) and linear mapmaking (blue). The 2D pixel window
 	is the outer product of the 1D one along each axis. The pixel
 	windows model the response of the fourier coefficients to
 	binned (unweighted) mapmaking. Square it to get the effect on
