@@ -66,6 +66,7 @@
 \keywords{}
 
 \begin{abstract}
+	Moo moo cow
 \vspace*{5mm}
 \end{abstract}
 
@@ -119,7 +120,7 @@ or to measure and correct for the bias in a biased estimator
 (as in filter+bin mapmaking). However, this fails when the model
 does not actually describe the data, and this turns out to be
 the norm rather than the exception. The goal of this paper is to
-demonstrate the unintuitive and surprisingly large (O(1)) effect
+demonstrate the unintuitive and surprisingly large ($\mathcal{O}(1)$) effect
 even seemingly inconsequential model errors can have when imaging
 the CMB. The full scope of these errors appears to be largely
 unappreciated, and I fear that most ground-based CMB analyses
@@ -687,27 +688,6 @@ with the output shown in figure~\ref{fig:common}. In this example the
 large scales are biased \emph{high} and also subject to a phase shift, while
 the small scales have negligible bias.
 
-While the commmon-mode/bias-interplay works as a demonstration, it is a much
-less robust error mechanism than subpixel errors, and requires quite extreme
-parameters to produce appreciable bias. In my tests it also tends to disappear
-as more data is added and crosslinking increases, and I have not been able to
-provoke large-scale bias using this method for full-scale realistic datasets
-(unlike subpixel errors!).
-
-It would be convenient if the difficulty in finding model error mechanisms that
-bias large scales meant that subpixel errors are the only ones one needs to
-worry about, but sadly that does not seem to be the case. In my practical
-experience with ground-based CMB mapmaking there have been cases of large-scale
-power loss where subpixel errors were responsible for less than half of the
-total. In these cases the difficulty in finding these mechanisms becomes
-a curse rather than a blessing, since it makes it very difficult to track down
-the source of the bias. What makes model error bias especially insidious is that
-it is completely invisible to any simulation that does not explicitly include
-that particular type of model error. It is therefore very easy to trick oneself
-into believing that one has an unbiased analysis pipeline while there are in
-fact O(1) biases remaining.
-
-
 \begin{figure}
 	\centering
 	\includegraphics[width=\columnwidth]{common_mode/common.pdf}
@@ -726,6 +706,38 @@ fact O(1) biases remaining.
 	}
 	\label{fig:common}
 \end{figure}
+
+While the commmon-mode/bias-interplay works as a demonstration, it is a much
+less robust error mechanism than subpixel errors, and requires quite extreme
+parameters to produce appreciable bias. In my tests it also tends to disappear
+as more data is added and crosslinking increases, and I have not been able to
+provoke large-scale bias using this method for full-scale realistic datasets
+(unlike subpixel errors!).
+
+It would be convenient if the difficulty in finding model error mechanisms that
+bias large scales meant that subpixel errors are the only ones one needs to
+worry about, but sadly that does not seem to be the case. In my practical
+experience with ground-based CMB mapmaking there have been cases of large-scale
+power loss where subpixel errors were responsible for less than half of the
+total. In these cases the difficulty in finding these mechanisms becomes
+a curse rather than a blessing, since it makes it very difficult to track down
+the source of the bias.
+
+What makes model error bias especially insidious is that
+it is completely invisible to any simulation that does not explicitly include
+that particular type of model error. For example, a simulation where the CMB
+is read off from a simulated map using the same pointing matrix as is used
+in the mapmaking itself would be blind to subpixel errors. It is therefore very
+easy to trick oneself into believing that one has an unbiased analysis pipeline
+while there are in fact $\mathcal{O}(1)$ biases remaining.
+
+\section{Conclusion}
+
+\section*{Acknowledgements}
+I would like to thank Jon Sievers for first making me aware
+that subpixel errors weren't just limited to X'es around point
+sources and other small-scale effects.
+My work is supported by a grant from Simons Foundation.
 
 \bibliographystyle{act_titles}
 \bibliography{refs}
