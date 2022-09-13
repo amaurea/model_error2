@@ -615,7 +615,15 @@ come at a high cost in noise. Finally, the filter+bin map is biased even after s
 debiasing due to the simulations not capturing the subpixel behavior of the real data.
 Both the bias and noise levels are the same as maximum-likelihood in this example.
 
-\subsubsection{Eliminating subpixel errors}
+To test whether the observed biases are truly caused by subpixel errors, I repeat
+the simulations with only one sample per pixel ($N_\text{scan} = N_\text{side}$).
+As expected this results in an unbiased power spectrum for all methods.\footnote{
+	Even filter+bin, which ignores mode coupling, ends up having an unbiased power
+	spectrum because the simulations used to build the transfer function followed
+	the same distribution as the real signal.
+}
+
+\subsubsection{Effective mitigation of subpixel errors}
 There will be no subpixel errors in the limit of infinitely small pixels,
 so it's tempting to simply reduce the pixel size to solve the problem. This
 does work, but since subpixel errors are proportional to $|\nabla s \cdot \vec \Delta|$,
@@ -640,10 +648,10 @@ inds    = np.concatenate([
 P_lin = scipy.sparse.csr_array((weights,(samps,inds)),shape=(N_samp,N_pix))
 \end{lstlisting}
 Bilinear mapmaking results in a different pixel window than
-the standard \lstinline{pixwin_nn = sinc(l_y)[:,None]*sinc(l_x)[None,:]}
+the standard \lstinline{pixwin_nn = sinc(ly)[:,None]*sinc(lx)[None,:]}
 of nearest neighbor mapmaking. I measure this empirically using simulations
 of simple binned mapmaking, and find it to have the separable form
-\lstinline{pixwin_lin = linwin1d(l_y)[:,None]*linwin1d(l_x)[None,:]},
+\lstinline{pixwin_lin = linwin1d(ly)[:,None]*linwin1d(lx)[None,:]},
 with \lstinline{linwin1d} being plotted in figure~\ref{fig:linwin1d}.
 
 \begin{figure}
@@ -665,6 +673,39 @@ this cost is worh it, with bilinear maximum-likelihood mapmaking being bias-free
 and even lower noise than standard ML. The bias is also greatly reduced for
 destriping, but not eliminated.
 
+\section{Don't think you're safe just because you avoid subpixel errors}
+By no means all model errors have the strong impact on large scales
+that subpixel errors do. For example, gain errors typically have a
+scale-independent response while pointing errors broaden the beam, damping
+small scales but not large ones. It is, in fact, quite difficult to come up
+with other mechanisms by which model errors can cause large-scale power
+bias. One example I found requires a multi-detector system large relative
+gain errors combined with a noise model where the noise is
+dominated by a long-wavelength common mode (strong correlation between detectors
+at long wavelengths). This is implemented in the program \verb|common_mode_test.py|
+with the output shown in figure~\ref{fig:common}. In this example the
+large scales are biased \emph{high} and also subject to a phase shift, while
+the small scales have negligible bias.
+
+While the commmon-mode/bias-interplay works as a demonstration, it is a much
+less robust error mechanism than subpixel errors, and requires quite extreme
+parameters to produce appreciable bias. In my tests it also tends to disappear
+as more data is added and crosslinking increases, and I have not been able to
+provoke large-scale bias using this method for full-scale realistic datasets
+(unlike subpixel errors!).
+
+It would be convenient if the difficulty in finding model error mechanisms that
+bias large scales meant that subpixel errors are the only ones one needs to
+worry about, but sadly that does not seem to be the case. In my practical
+experience with ground-based CMB mapmaking there have been cases of large-scale
+power loss where subpixel errors were responsible for less than half of the
+total. In these cases the difficulty in finding these mechanisms becomes
+a curse rather than a blessing, since it makes it very difficult to track down
+the source of the bias. What makes model error bias especially insidious is that
+it is completely invisible to any simulation that does not explicitly include
+that particular type of model error. It is therefore very easy to trick oneself
+into believing that one has an unbiased analysis pipeline while there are in
+fact O(1) biases remaining.
 
 
 \begin{figure}
