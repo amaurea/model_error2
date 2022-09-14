@@ -66,8 +66,17 @@
 \keywords{}
 
 \begin{abstract}
-	Moo moo cow
-\vspace*{5mm}
+CMB mapmaking relies on a data model to solve for the sky map, and this
+process is vulnerable to bias if the data model cannot capture the full
+behavior of the signal. I demonstrate that this bias is not just limited to
+small-scale effects in high-contrast regions of the sky, but can manifest
+as $\mathcal{O}(1)$ power loss on large scales in the map under conditions
+and assumptions realistic for ground-based CMB telescopes. This bias is
+invisible to simulation-based tests that do not expliclitly model them,
+making it easy to miss. I investigate the common case of sub-pixel errors
+in more detail and demonstrate that this particular type of model error can
+be eliminated using bilinear pointing matrices. Finally, I provide simple
+methods for testing for the presence of large-scale model error bias.
 \end{abstract}
 
 \section{Introduction}
