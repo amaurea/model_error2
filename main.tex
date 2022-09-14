@@ -719,7 +719,7 @@ bias large scales meant that subpixel errors are the only ones one needs to
 worry about, but sadly that does not seem to be the case. In my practical
 experience with ground-based CMB mapmaking there have been cases of large-scale
 power loss where subpixel errors were responsible for less than half of the
-total. In these cases the difficulty in finding these mechanisms becomes
+total bias. In these cases the difficulty in finding these mechanisms becomes
 a curse rather than a blessing, since it makes it very difficult to track down
 the source of the bias.
 
@@ -727,11 +727,55 @@ What makes model error bias especially insidious is that
 it is completely invisible to any simulation that does not explicitly include
 that particular type of model error. For example, a simulation where the CMB
 is read off from a simulated map using the same pointing matrix as is used
-in the mapmaking itself would be blind to subpixel errors. It is therefore very
-easy to trick oneself into believing that one has an unbiased analysis pipeline
-while there are in fact $\mathcal{O}(1)$ biases remaining.
+in the mapmaking itself would be blind to subpixel errors. Given the many
+possible ways the real data might deviate from one's model of it, it is hard
+to be sure that one has included all the relevant types of model error in the simulations.
+It is therefore very easy to trick oneself into believing that one has an
+unbiased analysis pipeline while there are in fact $\mathcal{O}(1)$ biases remaining.
+
+\section{Useful tests}
+The unintuitive large-scale effects of model errors rely on the interaction
+between model errors and non-local weighting/filtering. A noise model (or filter) with
+a large dynamic range, such as one capturing the huge ratio between the long-wavelength
+and short-wavelength noise power for ground-based CMB telescopes, is therefore
+much more vulnerable to large-scale power loss than one appropriate for a
+space-based telescopes which have almost flat noise power spectra. This suggests
+the following tests for large-scale model error bias:
+\begin{enumerate}
+	\item Compare power spectra with those from a space-based telescope.
+		This is reliable comes at the cost of being able to make an independent measurement.
+	\item Split the data into subsets with different noise dynamic range
+		and check their consistency. This could for example be a split by the
+		level of precipitable water-vapour (PWV) in the atmosphere. High-PWV-data
+		would be expected to have a higher dynamic range and therefore be more vulnerable.
+	\item Map the same data both using the standard noise model/filter and a
+		less optimal one an artificially reduced lower dynamic range, e.g. one that
+		underestimates the amount of correlated noise. The latter should result in
+		less a biased but noisier map, as we saw in figures~\ref{fig:2d-bias} and \ref{fig:2d-noise}.
+		If the maps are consistent, then large-scale model error bias is probably not an issue.
+\end{enumerate}
 
 \section{Conclusion}
+
+\begin{enumerate}
+	\item \textbf{All CMB current mapmaking methods are vulnerable to model error bias},
+		including maximum-likelihood mapmaking, destriping and filter+bin mapmaking.
+	\item The most common model error is \textbf{subpixel errors} due to the assumption that
+		the signal is constant inside each pixel (a nearest-neighbor pointing matrix),
+		but \textbf{other types of model error can also be important}.
+	\item Model error bias can manifest in unintuitive ways, with a common symptom
+		being a large ($\mathcal{O}(1)$) \textbf{loss of long-wavelength power} in the maps.
+	\item The size of the bias is proportional to the dynamic range of the filter/noise model.
+		Hence it is \textbf{important for ground-based measurments of the unpolarized CMB}
+		due to the presence of large-scale atmospheric noise there, but is \textbf{much less
+		important for polarization mesurements or space-based telescopes}.
+	\item \textbf{Simulations are blind to these biases} unless specifically designed to
+		target them. There is a large risk of ending up thinking one has an unbiased
+		pipeline despite there being large bias in the actual CMB maps.
+	\item An effective way of testing for this bias is to \textbf{remap the data using a
+		(much) lower-dynamic range noise model/filter}\footnote{Or much longer baselines for destriping}
+		and checking if this leads to consistent power spectra.
+\end{enumerate}
 
 \section*{Acknowledgements}
 I would like to thank Jon Sievers for first making me aware
