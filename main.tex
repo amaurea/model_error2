@@ -58,7 +58,7 @@
 %\title{Ground based CMB maps vulnerable to large-scale power loss}
 %\title{Sub-pixel errors can bias the largest scales during mapmaking}
 %\title{impact of sub-pixel errors on the recovery of large angular scales in CMB mapmaking}
-\title{Large-scale power loss in ground-based CMB maps}
+\title{Large-scale power loss in ground-based CMB mapmaking}
 
 \author[0000-0002-4478-7111]{Sigurd~Naess}
 \affil{Institute of Theoretical Astrophysics, University of Oslo, Norway}
@@ -74,9 +74,10 @@ as $\mathcal{O}(1)$ power loss on large scales in the map under conditions
 and assumptions realistic for ground-based CMB telescopes. This bias is
 invisible to simulation-based tests that do not explicitly model them,
 making it easy to miss. I investigate the common case of sub-pixel errors
-in more detail and demonstrate that this particular type of model error can
+in more detail and demonstrate that this special case of model error can
 be eliminated using bilinear pointing matrices. Finally, I provide simple
-methods for testing for the presence of large-scale model error bias.
+methods for testing for the presence of large-scale model error bias in
+the general case.
 \end{abstract}
 
 \section{Introduction}
@@ -128,12 +129,10 @@ does not actually describe the data, and this turns out to be
 the norm rather than the exception. Previously this bias has
 been thought of as mainly a small-scale effect relevant only in
 regions of the sky with very high contrast, leading to artifacts
-like thin stripes through bright sources \citep{xgls-2017,model-error},
+like thin stripes or bowling around bright sources \citep{xgls-2017,model-error},
 or as a tiny correction on intermediate scales (\citet{planck-ml-bias-2006}
 saw a bias of 0.6\% peaking at $\ell=800$ for simulations of the Planck
-space telescope).
-
-The goal of this paper is to
+space telescope). The goal of this paper is to
 demonstrate the unintuitive and surprising result that that these effects
 can lead to $\mathcal{O}(1)$ bias on large scales everywhere
 in the map. The full scope of these errors appears to be largely
@@ -143,6 +142,29 @@ due to these effects. The bias usually manifests as a power
 deficit at large scales, as illustrated in figure~\ref{fig:maps-2d}.
 
 \section{Subpixel errors}
+\begin{figure*}
+	\centering
+	\begin{tabular}{cc}
+		\dfn{\large a} & \dfn{\large b} \\
+		\raisebox{-0.5\height}{\includegraphics[height=70mm]{nearest_neigh/path.pdf}} &
+		\hspace*{-5mm}\raisebox{-0.5\height}{\includegraphics[height=70mm]{nearest_neigh/vals.pdf}}
+	\end{tabular}
+	\caption{
+		\dfn{a}: Example path (red) of a detector across a few pixels.
+		The area closest to each pixel center (black dots) is shown with dotted lines.
+		In the nearest neighbor model, the value associated with each sample is simply
+		that of the closest pixel, regardless of where inside that pixel it is.
+		\dfn{b}: Example detector signal (red) for the same path. The closest
+		matching model (green) leaves a jagged residual (blue) that has power on
+		all length scales despite the signal itself being very smooth.
+		For comparison, if our model were a constant zero, then the residual
+		would just be the signal itself (red), and hence smooth.
+		{\bf If smooth residuals are much cheaper in the likelihood than jagged ones,
+		then a zero model will be preferred to one that hugs the signal as
+		tightly as possible} like the green curve.
+	}
+	\label{fig:nearest-neigh}
+\end{figure*}
 Subpixel errors may be both the most common and most important
 class of model errors in CMB mapmaking.
 For efficiency reasons $P$ is always\footnote{I am not aware of any
@@ -163,45 +185,6 @@ Hence, the closest the model can get to a smooth curve is a
 staircase-like function that hugs it, leaving a residual full of
 discontinuous jumps (the blue curve in the figure).
 
-Discontinuous residuals are not necessarily problematic. The trouble arises
-when this is coupled with a likelihood\footnote{The equivalent for filter+bin is a filter that
-impacts some modes more than others (which is the whole point of a filter),
-and for destriping it's the baseline length and any amplitude priors.
-} where some modes have much less weight than others. Ground-based CMB
-telescopes suffer from atmospheric emission that acts as a large source
-of noise on large scales. This leads to time-ordered data noise power
-spectra similar to the one sketched in figure~\ref{fig:ps}, with
-a white noise floor at short timescales (high frequency) transitioning to a steep
-rise of several orders of magnitude as one moves to longer timescales
-(low frequency). In this case long-wavelength modes have orders of magnitude
-lower weight in the likelihood than short-wavelength modes. Put another way,
-they are orders of magnitude \emph{cheaper to sacrifice} when the model can't fully
-fit the data.
-
-\begin{figure*}
-	\centering
-	\begin{tabular}{cc}
-		\dfn{\large a} & \dfn{\large b} \\
-		\raisebox{-0.5\height}{\includegraphics[height=70mm]{nearest_neigh/path.pdf}} &
-		\hspace*{-5mm}\raisebox{-0.5\height}{\includegraphics[height=70mm]{nearest_neigh/vals.pdf}}
-	\end{tabular}
-	\caption{
-		\dfn{a}: Example path (red) of a detector across a few pixels.
-		The area closest to each pixel center (black dots) is shown with dotted lines.
-		In the nearest neighbor model, the value associated with each sample is simply
-		that of the closest pixel, regardless of where inside that pixel it is.
-		\dfn{b}: Example detector signal (red) for the same path. The closest
-		matching model (green) leaves a jagged residual (blue) that has power on
-		all lengthscales despite the signal itself being very smooth.
-		For comparison, if our model were a constant zero, then the residual
-		would just be the signal itself (red), and hence smooth.
-		{\bf If smooth residuals are much cheaper in the likelihood than jagged ones,
-		then a zero model will be preferred to one that hugs the signal as
-		tightly as possible} like the green curve.
-	}
-	\label{fig:nearest-neigh}
-\end{figure*}
-
 \begin{figure}
 	\centering
 	\includegraphics[width=\columnwidth]{subpix/ps.pdf}
@@ -216,6 +199,21 @@ fit the data.
 	}
 	\label{fig:ps}
 \end{figure}
+
+Discontinuous residuals are not necessarily problematic. The trouble arises
+when this is coupled with a likelihood\footnote{The equivalent for filter+bin is a filter that
+impacts some modes more than others (which is the whole point of a filter),
+and for destriping it's the baseline length and any amplitude priors.
+} where some modes have much less weight than others. Ground-based CMB
+telescopes suffer from atmospheric emission that acts as a large source
+of noise on long timescales. This leads to time-ordered data noise power
+spectra similar to the one sketched in figure~\ref{fig:ps}, with
+a white noise floor at short timescales (high frequency) transitioning to a steep
+rise of several orders of magnitude as one moves to longer timescales
+(low frequency). In this case long-wavelength modes have orders of magnitude
+lower weight in the likelihood than short-wavelength modes. Put another way,
+they are orders of magnitude \emph{cheaper to sacrifice} when the model can't fully
+fit the data.
 
 \subsection{1D toy example}
 To illustrate the interaction between a nearest neighbor pointing matrix's
@@ -254,6 +252,7 @@ in each pixel, with no weighting:
 \begin{lstlisting}
 map_binned = np.linalg.solve((P.T.dot(P)), P.T.dot(signal))
 \end{lstlisting}
+This is the unweighted least-squares solution for the map.
 
 \subsubsection{Maximum-likelihood}
 The maximum-likelihood solution of equation~\ref{eq:model} for the
@@ -261,7 +260,8 @@ sky image $m$ is
 \begin{align}
 	\hat m = (P^TN^{-1}P)^{-1}P^TN^{-1}d
 \end{align}
-where $N$ is the covariance matrix of the noise $n$.
+where $N$ is the covariance matrix of the noise $n$. This is the
+generalized least-squares solution for the map.
 In our toy example, $N^{-1} = F$, so the \emph{maximum-likelihood map}
 is
 \begin{lstlisting}
@@ -362,7 +362,7 @@ map_ds = np.linalg.solve(P.T.dot(P), P.T.dot(signal - a))
 		sampled at 10 samples per output pixel.
 		\dfn{binned}: Simple binned map (the unweighted average per pixel).
 		Very suboptimal in the presence of correlated noise, but unbiased.
-		\dfn{ML}: Maximum-likelihood map. 2/3 of the signal is lost despite
+		\dfn{ML}: Maximum-likelihood map. 2/3 of the signal amplitude is lost despite
 		the naive expectation of biaslessness for this estimator.
 		\dfn{FB deobs}: Filter+bin map debiased using an observation matrix.
 		Identical to ML.
@@ -409,7 +409,8 @@ Given that we can't exactly match the signal, what is the best approximation?
 Let us consider two very different alterantives. \dfn{Model A}: The value in each pixel
 is the average of the samples that hits it, making the model curve trace the
 smooth signal as closely as it can. This is the green curve in figure~\ref{fig:nearest-neigh},
-and has the sawtooth-like residual shown with the blue curve.
+and has the sawtooth-like residual shown with the blue curve. It is probably the
+model most people would choose if asked to draw one manually.
 \dfn{Model B}: The value in each pixel is zero, and the residual is simply the signal itself.
 Model B seems like a terrible fit to the data, but under a reasonable noise model
 for a ground-based telescope, like the one shown in figure~\ref{fig:ps}, it
@@ -437,9 +438,9 @@ To demonstrate that the bias really is caused by subpixel errors,
 I repeated the simulation with a signal that follows the same nearest-neighbor
 behavior as the data model, thus eliminating subpixel errors. The
 result is shown in figure~\ref{fig:subpix-noerr}. The bias has disappeared
-in all methods except filter+bin with transfer-function based debiasing
-(which has an additional source of bias due to its assumption of a Fourier-diagonal
-filter response).
+in all methods except filter+bin with transfer-function based debiasing,
+which has an additional source of bias due to its assumption of a Fourier-diagonal
+filter response.
 
 \subsection{2D toy example}
 \label{sec:toy-2d}
@@ -448,7 +449,7 @@ its unrealistic observing pattern makes it insufficient for exploring
 optimality/bias tradeoffs in the different methods. I therefore made a larger
 toy example where a single detector scans at constant speed across a square
 patch, sampling $N_\text{scan} = 400$ equi-spaced rows with $N_\text{scan}$
-equi-spaced samples per row, followed by a column-wise scann the same patch,
+equi-spaced samples per row, followed by a column-wise scan the same patch,
 leading to a total cross-linked data set $N_\text{samp} = 2 N_\text{scan}^2 = 3200$
 samples long. This equi-spaced grid of samples was chosen to make it easy to
 simulate a signal directly onto the the samples without needing the complication
@@ -458,7 +459,7 @@ the different mapmaking methods.
 
 For the signal I draw realizations from a CMB-like $1/l^2$ power spectrum
 with a Gaussian beam with standard deviation $\sigma=3$ pixels. Here $l$
-is the pixe-space wave-number, which I evaluate in the higher
+is the pixel-space wave-number, which I evaluate in the higher
 resolution sample space as
 \begin{lstlisting}
 ly = np.fft.fftfreq(N_scan)[:,None] * N_side/N_scan
@@ -541,7 +542,7 @@ P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+
 		at 4x higher resolution than what is used for reconstructing the output maps.
 		All output maps were built assuming a nearest neighbor pointing matrix,
 		except for the last row where a bilinear pointing matrix was used.
-		The binned map is bias-free but has uselessly high noise. Maximum likelihood (ML)
+		The binned map (top right) is bias-free but has uselessly high noise. Maximum likelihood (ML)
 		and destriping with short baselengths (with (DS+) and without (DS) baseline amplitude prior,
 		which only matters for the shortest baseline)
 		are all low-noise but biased on large scales. This bias goes away as the noise model
@@ -565,7 +566,8 @@ P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+
 		the (very noisy) longest destriping baseline. This bias disappears (ML)
 		or is greatly reduced (DS) when switching to bilinear interpolation in the pointing matrix.
 		See figure~\ref{fig:2d-noise} for the corresponding noise spectra.
-		I interpret upturn at $l>0.4$ (close to the Nyquist frequency) as aliasing, which
+		The wavenumber $l$ is dimensionless and with a Nyquist frequency of 0.5.
+		I interpret upturn at $l>0.4$ as aliasing, which
 		is expected and not relevant for the biases we consider here.
 	}
 	\label{fig:2d-bias}
@@ -576,12 +578,12 @@ P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+
 	\hspace*{-5mm}\includegraphics[width=1.10\columnwidth]{subpix/model_error_toy_2d_noise.pdf}
 	\caption{
 		Comparison of the optimality for the methods defined in section~\ref{sec:2d-cases}, measured
-		as the debiased noise power spectrum for each method relative
-		to that of bilinear maximum-likelihood mapmaking. See figure~\ref{fig:2d-bias}
-		for the bias of each method.
+		as the debiased noise power spectrum (using the bias measurements from figure~\ref{fig:2d-bias})
+		for each method relative to that of bilinear maximum-likelihood mapmaking.
 		Note the logarithmic vertical axis, and that binned case was divided by $10^3$
 		to bring it partially inside the plot bounds.
-		It's clear that naive bias mitigation
+		The wavenumber $l$ is dimensionless and with a Nyquist frequency of 0.5.
+		It's clear that simple bias mitigation
 		methods like artificially whitening the noise model or increasing the
 		baseline length are too costly to be practical.
 	}
@@ -605,6 +607,7 @@ I will investigate 5 classes of nearest-neighbor maps:
 	\item \dfn{DS $X$}: Destriping map with a baseline of $X\in \{4,16,64\}$ samples and no amplitude
 		prior. This is probably the most common type of destriping. The baseline lengths
 		can be compared with the noise knee wavelength of 6.7 pixels $\approx$ 27 samples.
+		This is the wavelength where the correlated and white noise powers are equal.
 	\item \dfn{DS+ $X$}: Like DS $X$, but uses the correlated part of the maximum-likelihood
 		noise model as an amplitude prior ($C_a$ in equation~\ref{eq:destripe}).
 	\item \dfn{FB}: Filter+bin mapmaking where a transfer function is measured using
@@ -653,8 +656,8 @@ where $s$ is the true, smooth signal on the sky and $\vec \Delta = [\Delta_x,\De
 is the pixel shape, the improvement is only first order in the pixel side length.
 A much more feasible solution is to instead improve the subpixel handling in the
 pointing matrix. Going from nearest neighbor to bilinear interpolation is enough
-to practically eliminate subpixel errors. We can implement this in the toy example
-by defining
+to practically eliminate subpixel errors without reducing pixel size. We can
+implement this in the toy example by defining
 \begin{lstlisting}
 pix_left = np.floor(pix).astype(int)
 ry, rx  = pix-pix_left
@@ -701,8 +704,8 @@ that subpixel errors do. For example, gain errors typically have a
 scale-independent response while pointing errors broaden the beam, damping
 small scales but not large ones. It is, in fact, quite difficult to come up
 with other mechanisms by which model errors can cause large-scale power
-bias. One example I found requires a multi-detector system with large relative
-gain errors combined with a noise model where the noise is
+bias. One example I found requires a multi-detector system with large
+gain error error differences between the detectors, combined with a noise model where the noise is
 dominated by a long-wavelength common mode (strong correlation between detectors
 at long wavelengths). This is implemented in the program \verb|common_mode_test.py|
 (see section~\ref{sec:code})
@@ -765,8 +768,8 @@ space-based telescopes which have almost flat noise power spectra. This suggests
 the following tests for large-scale model error bias:
 \begin{enumerate}
 	\item Compare power spectra with those from a space-based telescope.
-		This is reliable comes at the cost of being able to make an independent measurement.
-	\item Split the data into subsets with different noise dynamic range
+		This is reliable but comes at the cost of being able to make an independent measurement.
+	\item Split the data into subsets with different ratios of correlated noise to white noise
 		and check their consistency. This could for example be a split by the
 		level of precipitable water-vapour (PWV) in the atmosphere. High-PWV-data
 		would be expected to have a higher dynamic range and therefore be more vulnerable.
@@ -790,7 +793,7 @@ respectively, while the common-mode/gain-error interplay example is in
 \begin{enumerate}
 	\item \textbf{All CMB current mapmaking methods are vulnerable to model error bias},
 		including maximum-likelihood mapmaking, destriping and filter+bin mapmaking.
-	\item The most common model error is \textbf{subpixel errors} due to the assumption that
+	\item \textbf{The most common model error is subpixel errors} due to the assumption that
 		the signal is constant inside each pixel (a nearest-neighbor pointing matrix),
 		but \textbf{other types of model error can also be important}.
 	\item Model error bias can manifest in unintuitive ways, with a common symptom
@@ -799,8 +802,8 @@ respectively, while the common-mode/gain-error interplay example is in
 		Hence it is \textbf{important for ground-based measurements of the unpolarized CMB}
 		due to the presence of large-scale atmospheric noise there, but is \textbf{much less
 		important for polarization measurements or space-based telescopes}.
-	\item \textbf{Simulations are blind to these biases} unless specifically designed to
-		target them. There is a large risk of ending up thinking one has an unbiased
+	\item \textbf{Simulations are blind to these biases unless specifically designed to
+		target them}. There is a large risk of ending up thinking one has an unbiased
 		pipeline despite there being large bias in the actual CMB maps.
 	\item An effective way of testing for this bias is to \textbf{also map the data using a
 		(much) lower dynamic range noise model/filter}\footnote{Or much longer baselines for destriping}
