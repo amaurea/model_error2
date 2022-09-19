@@ -126,14 +126,18 @@ or to measure and correct for the bias in a biased estimator
 (as in filter+bin mapmaking). However, this fails when the model
 does not actually describe the data, and this turns out to be
 the norm rather than the exception. Previously this bias has
-been thought of as mainly a small-scale effect relevant in
+been thought of as mainly a small-scale effect relevant only in
 regions of the sky with very high contrast, leading to artifacts
-like thin stripes through bright sources \citep{xgls-2017,model-error}.
+like thin stripes through bright sources \citep{xgls-2017,model-error},
+or as a tiny correction on intermediate scales (\citet{planck-ml-bias-2006}
+saw a bias of 0.6\% peaking at $\ell=800$ for simulations of the Planck
+space telescope).
+
 The goal of this paper is to
 demonstrate the unintuitive and surprising result that that these effects
 can lead to $\mathcal{O}(1)$ bias on large scales everywhere
 in the map. The full scope of these errors appears to be largely
-unappreciated, and I fear that most ground-based CMB analyses
+unappreciated, and I fear that many ground-based CMB analyses
 so far suffer from uncorrected bias at low multipoles in total intensity
 due to these effects. The bias usually manifests as a power
 deficit at large scales, as illustrated in figure~\ref{fig:maps-2d}.
