@@ -124,26 +124,26 @@ def mapmaker_destripe(tod, P, iNw=1, iNc=0, blen=1):
 
 def make_maps(tod, P, iN, iNw, iNc):
 	names, maps = [], []
-	#names.append("binned"); print(names[-1]); maps.append(mapmaker_bin(tod, P))
-	#names.append("ml");     print(names[-1]); maps.append(mapmaker_ml (tod, P, iN))
+	names.append("binned"); print(names[-1]); maps.append(mapmaker_bin(tod, P))
+	names.append("ml");     print(names[-1]); maps.append(mapmaker_ml (tod, P, iN))
 	# Instead of implementing all the sims in the mapmaker_filter_bin step, we split
 	# it into two parts: Just the filter+bin part and a simulation step. With this
 	# we can get the tfun as fbinsim/binned. The point of this is to avoid having
 	# a sim-loop inside a sim-loop
 	names.append("fbin");    print(names[-1]); maps.append(mapmaker_filter_bin(tod, P, iN))
 	names.append("fbinsim"); print(names[-1]); maps.append(mapmaker_filter_bin(P.dot(mapmaker_bin(tod,P).reshape(-1)), P, iN))
-	#for cap in range(1,7):
-	#	names.append("ml_cap_%d" % cap)
-	#	print(names[-1])
-	#	maps.append(mapmaker_ml(tod, P, np.minimum(iN, np.max(iN)/10**cap)))
-	#for blen in [4,16,64]:
-	#	names.append("destripe_prior_%03d" % blen)
-	#	print(names[-1])
-	#	maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=iNc, blen=blen))
-	#for blen in [4,16,64]:
-	#	names.append("destripe_plain_%03d" % blen)
-	#	print(names[-1])
-	#	maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=0,   blen=blen))
+	for cap in range(1,7):
+		names.append("ml_cap_%d" % cap)
+		print(names[-1])
+		maps.append(mapmaker_ml(tod, P, np.minimum(iN, np.max(iN)/10**cap)))
+	for blen in [4,16,64]:
+		names.append("destripe_prior_%03d" % blen)
+		print(names[-1])
+		maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=iNc, blen=blen))
+	for blen in [4,16,64]:
+		names.append("destripe_plain_%03d" % blen)
+		print(names[-1])
+		maps.append(mapmaker_destripe(tod, P, iNw=iNw, iNc=0,   blen=blen))
 	maps = np.array(maps)
 	return names, maps
 

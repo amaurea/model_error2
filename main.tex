@@ -438,6 +438,7 @@ in all methods except filter+bin with transfer-function based debiasing
 filter response).
 
 \subsection{2D toy example}
+\label{sec:toy-2d}
 The 1D toy example is useful for understanding the origin of the bias, but
 its unrealistic observing pattern makes it insufficient for exploring
 optimality/bias tradeoffs in the different methods. I therefore made a larger
@@ -700,6 +701,7 @@ bias. One example I found requires a multi-detector system with large relative
 gain errors combined with a noise model where the noise is
 dominated by a long-wavelength common mode (strong correlation between detectors
 at long wavelengths). This is implemented in the program \verb|common_mode_test.py|
+(see section~\ref{sec:code})
 with the output shown in figure~\ref{fig:common}. In this example the
 large scales are biased \emph{high} and also subject to a phase shift, while
 the small scales have negligible bias.
@@ -770,6 +772,14 @@ the following tests for large-scale model error bias:
 		less a biased but noisier map, as we saw in figures~\ref{fig:2d-bias} and \ref{fig:2d-noise}.
 		If the maps are consistent, then large-scale model error bias is probably not an issue.
 \end{enumerate}
+
+\section{Source code}
+\label{sec:code}
+The source code and data files behind these examples is available at
+\url{https://github.com/amaurea/model_error2}. The 1D and 2D subpixel
+simulations are available in \verb|subpix/model_error_toy.py| and \verb|subpix/model_error_toy.py|
+respectively, while the common-mode/gain-error interplay example is in
+\verb|common_mode/common_mode_test.py|.
 
 \section{Conclusion}
 
