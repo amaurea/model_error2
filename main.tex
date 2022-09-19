@@ -696,7 +696,7 @@ that subpixel errors do. For example, gain errors typically have a
 scale-independent response while pointing errors broaden the beam, damping
 small scales but not large ones. It is, in fact, quite difficult to come up
 with other mechanisms by which model errors can cause large-scale power
-bias. One example I found requires a multi-detector system large relative
+bias. One example I found requires a multi-detector system with large relative
 gain errors combined with a noise model where the noise is
 dominated by a long-wavelength common mode (strong correlation between detectors
 at long wavelengths). This is implemented in the program \verb|common_mode_test.py|
@@ -788,8 +788,8 @@ the following tests for large-scale model error bias:
 	\item \textbf{Simulations are blind to these biases} unless specifically designed to
 		target them. There is a large risk of ending up thinking one has an unbiased
 		pipeline despite there being large bias in the actual CMB maps.
-	\item An effective way of testing for this bias is to \textbf{remap the data using a
-		(much) lower-dynamic range noise model/filter}\footnote{Or much longer baselines for destriping}
+	\item An effective way of testing for this bias is to \textbf{also map the data using a
+		(much) lower dynamic range noise model/filter}\footnote{Or much longer baselines for destriping}
 		and checking if this leads to consistent power spectra.
 \end{enumerate}
 
