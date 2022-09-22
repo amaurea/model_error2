@@ -230,8 +230,11 @@ P = np.zeros((nsamp,npix))
 for i, p in enumerate(pix):
 	P[i,int(np.round(pix[i]))%npix] = 1
 \end{lstlisting}
-We build the inverse noise matrix/filter/baseline-prior $F$ by
-projecting an inverse fourier spectrum into pixel space:
+We assume a typical Fourier-diagonal ``1/f'' noise model
+$N(f) = \big(1+(f/f_\text{knee})^\alpha\big)^{-1}$
+with $f_\text{knee}=0.03$ and $\alpha=-3.5$, and bild the
+inverse noise matrix/filter/baseline-prior $F$ by
+projecting the inverse noise spectrum $N^{-1}$ into pixel space:
 \begin{lstlisting}
 freq   = np.fft.rfftfreq(nsamp)
 inv_ps = 1/(1+(np.maximum(freq,freq[1]/2)/0.03)**-3.5)
@@ -240,10 +243,15 @@ I = np.eye(nsamp)
 for i in range(nsamp):
 	F[:,i] = np.fft.irfft(inv_ps*np.fft.rfft(I[i]), n=nsamp)
 \end{lstlisting}
-The signal itself consists of just a long-wavelength sine wave:
+The signal itself consists of just a long-wavelength sine wave:\footnote{
+Since all the mapmaking methods we will discuss are linear,
+signal and noise can analysed independently. Since the focus
+in this example is bias, it's therefore enough to consider a
+signal-only data set, and we thus don't add any noise.}
 \begin{lstlisting}
 signal = np.sin(2*np.pi*pix/npix)
 \end{lstlisting}
+
 With this in place, we can now define our map estimators.
 
 \subsubsection{Binning}
@@ -269,7 +277,7 @@ map_ml = np.linalg.solve((P.T.dot(F).dot(P)),P.T.dot(F.dot(signal)))
 \end{lstlisting}
 
 \subsubsection{Filter+bin}
-As the same suggests, filter+bin consists of filtering the time-ordered
+As the name suggests, filter+bin consists of filtering the time-ordered
 data, and then making a binned map. We'll use $F$ as our filter, so
 the \emph{filter+bin map} is
 \begin{lstlisting}
@@ -327,7 +335,7 @@ The data is modeled as
 	d &= Pm + Qa + n_w
 \end{align}
 where $n_w$ is the white noise with diagonal covariance matrix $N_w$,
-and $Q$ describes how each correlaetd noise degree of freedom $a$
+and $Q$ describes how each correlated noise degree of freedom $a$
 maps onto the time-ordered data, typically in the form of seconds
 (ground) to minutes (space) long baselines. Given this, the
 maximum-likelihood solutions for $a$ and $m$ are
@@ -540,8 +548,9 @@ P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+
 		Example signal and noise maps for the different mapmaking methods.
 		The top left map is the input signal, which is directly evaluated
 		at 4x higher resolution than what is used for reconstructing the output maps.
-		All output maps were built assuming a nearest neighbor pointing matrix,
+		All output maps were built built from the same data and assume a nearest neighbor pointing matrix,
 		except for the last row where a bilinear pointing matrix was used.
+		The color range is the same for all panels.
 		The binned map (top right) is bias-free but has uselessly high noise. Maximum likelihood (ML)
 		and destriping with short baselengths (with (DS+) and without (DS) baseline amplitude prior,
 		which only matters for the shortest baseline)
