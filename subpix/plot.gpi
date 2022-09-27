@@ -1,6 +1,5 @@
 set key above
 set xlabel "Pixel (x)" offset 0, 0.5
-set ylabel "Pixel value" offset 2.2,0
 set ytics 0.25
 set xtics 1
 
@@ -29,7 +28,6 @@ plot "ps.txt" u 1:2 w l lw 2
 
 # Plot the residuals too
 set xlabel "Pixel (x)"
-set ylabel "Pixel value"
 set dt 2 (16,4)
 set xtics 1
 unset logscale xy
