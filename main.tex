@@ -234,10 +234,15 @@ for i, p in enumerate(pix):
 	P[i,int(np.round(pix[i]))%npix] = 1
 \end{lstlisting}
 We assume a typical Fourier-diagonal ``1/f'' noise model
-$N(f) = \big(1+(f/f_\text{knee})^\alpha\big)^{-1}$
+$N(f) = 1+(f/f_\text{knee})^\alpha$
 with $f_\text{knee}=0.03$ and $\alpha=-3.5$, and build the
 inverse noise matrix/filter/baseline-prior $F$ by
-projecting the inverse noise spectrum $N^{-1}$ into pixel space:
+projecting the inverse noise spectrum $N^{-1}$ into pixel space:\footnote{
+	In practice the ``1/f'' power law does not continue to infinity at zero
+	frequency, but stabilizes at some high value at low frequency. We implement
+	this by replacing $f=0$ with a small, non-zero number for the purposes of
+	computing the noise spectrum in the following.
+}
 \begin{lstlisting}
 freq   = np.fft.rfftfreq(nsamp)
 inv_ps = 1/(1+(np.maximum(freq,freq[1]/2)/0.03)**-3.5)
@@ -272,7 +277,14 @@ sky image $m$ is
 	\hat m = (P^TN^{-1}P)^{-1}P^TN^{-1}d
 \end{align}
 where $N$ is the covariance matrix of the noise $n$. This is the
-generalized least-squares solution for the map.
+generalized least-squares solution for the map.\footnote{
+	The matrix $P^TN^{-1}P$ is often poorly conditioned, making it slow
+	for iterative solution methods to recover the large scales. If iteration is
+	stopped early, this could result in a lack of power at large scales.
+	This well-known phenomenon is \emph{not} the bias I'm exploring in
+	this paper, and since I solve the equation exactly it does not
+	appear here.
+}
 In our toy example, $N^{-1} = F$, so the \emph{maximum-likelihood map}
 is
 \begin{lstlisting}
@@ -465,7 +477,7 @@ patch, sampling $N_\text{scan} = 400$ equi-spaced rows with $N_\text{scan}$
 equi-spaced samples per row, followed by a column-wise scan the same patch,
 leading to a total cross-linked data set $N_\text{samp} = 2 N_\text{scan}^2 = 3200$
 samples long. This equi-spaced grid of samples was chosen to make it easy to
-simulate a signal directly onto the the samples without needing the complication
+simulate a signal directly onto the samples without needing the complication
 of pixel-to-sample projection. These samples will then be mapped onto a
 square grid of pixels with a side length of $N_\text{side} = 100$ using
 the different mapmaking methods.
