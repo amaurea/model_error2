@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: fig2dev Version 3.2.8b -->
+<!-- CreationDate: 2023-01-27 22:51:47 -->
+<!-- Magnification: 1 -->
+<svg	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="633pt" height="309pt"
+	viewBox="135 2528 10537 5144">
+<g fill="none">
+<!-- Line -->
+<polyline points=" 5925,4125 5700,4125 5700,6075 5925,6075"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 10425,4125 10650,4125 10650,6075 10425,6075"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 1350,2550 1050,2550 1050,7650 1350,7650"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 3150,2550 3450,2550 3450,7650 3150,7650"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Text -->
+<text xml:space="preserve" x="150" y="5325" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="480" text-anchor="start">P =</text>
+<!-- Text -->
+<text xml:space="preserve" x="4800" y="5325" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="480" text-anchor="start">P =</text>
+<!-- Text -->
+<text xml:space="preserve" x="5025" y="5025" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">T</text>
+<!-- Line -->
+<rect x="1575" y="2700" width="336" height="937"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<g transform="translate(1725,2775) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<g transform="translate(1725,3375) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<text xml:space="preserve" x="1735" y="3227" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">x</text>
+<!-- Line -->
+<rect x="1200" y="2700" width="336" height="937"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<g transform="translate(1350,2775) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<g transform="translate(1350,3375) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<text xml:space="preserve" x="1350" y="3225" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">1-x</text>
+<!-- Line -->
+<rect x="1575" y="3679" width="336" height="937"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<g transform="translate(1725,3754) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<g transform="translate(1725,4354) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<text xml:space="preserve" x="1725" y="4204" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">1-x</text>
+<!-- Line -->
+<rect x="1942" y="3679" width="336" height="937"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<g transform="translate(2092,3754) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<g transform="translate(2092,4354) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<text xml:space="preserve" x="2102" y="4206" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">x</text>
+<!-- Line -->
+<rect x="1942" y="4654" width="336" height="937"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<g transform="translate(2092,4729) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<g transform="translate(2092,5329) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<text xml:space="preserve" x="2092" y="5179" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">1-x</text>
+<!-- Line -->
+<rect x="2309" y="4652" width="336" height="937"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<g transform="translate(2459,4727) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<g transform="translate(2459,5327) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<text xml:space="preserve" x="2469" y="5179" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">x</text>
+<!-- Line -->
+<rect x="1200" y="6586" width="336" height="937"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<g transform="translate(1350,6661) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<g transform="translate(1350,7261) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<text xml:space="preserve" x="1360" y="7113" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">x</text>
+<!-- Line -->
+<rect x="3006" y="6586" width="336" height="937"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<g transform="translate(3156,6661) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<g transform="translate(3156,7261) rotate(-270)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+</g><!-- Text -->
+<text xml:space="preserve" x="3156" y="7111" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">1-x</text>
+<!-- Line -->
+<rect x="5775" y="4200" width="937" height="336"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<text xml:space="preserve" x="5850" y="4365" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="6450" y="4365" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="6225" y="4425" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">1-x</text>
+<!-- Line -->
+<rect x="5775" y="4575" width="937" height="336"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<text xml:space="preserve" x="5850" y="4740" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="6450" y="4740" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="6240" y="4786" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">x</text>
+<!-- Line -->
+<rect x="6753" y="4573" width="937" height="336"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<text xml:space="preserve" x="6828" y="4738" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="7428" y="4738" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="7203" y="4798" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">1-x</text>
+<!-- Line -->
+<rect x="6748" y="4943" width="937" height="336"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<text xml:space="preserve" x="6823" y="5108" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="7423" y="5108" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="7213" y="5154" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">x</text>
+<!-- Line -->
+<rect x="7712" y="4941" width="937" height="336"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<text xml:space="preserve" x="7787" y="5106" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="8387" y="5106" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="8162" y="5166" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">1-x</text>
+<!-- Line -->
+<rect x="7702" y="5306" width="937" height="336"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<text xml:space="preserve" x="7777" y="5471" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="8377" y="5471" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="8167" y="5517" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">x</text>
+<!-- Line -->
+<rect x="9637" y="4246" width="937" height="336"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<text xml:space="preserve" x="9712" y="4411" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="10312" y="4411" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="10102" y="4457" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">x</text>
+<!-- Line -->
+<rect x="9606" y="5665" width="937" height="336"
+	stroke="#000000" stroke-width="8px" stroke-dasharray="10 30"/>
+<!-- Text -->
+<text xml:space="preserve" x="9681" y="5830" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="10281" y="5830" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="start">...</text>
+<!-- Text -->
+<text xml:space="preserve" x="10056" y="5890" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="240" text-anchor="middle">1-x</text>
+<!-- Text -->
+<g transform="translate(9171,5479) rotate(-158)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="600" text-anchor="middle">...</text>
+</g><!-- Text -->
+<g transform="translate(2575,6092) rotate(-293)" >
+<text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="600" text-anchor="middle">...</text>
+</g></g>
+</svg>

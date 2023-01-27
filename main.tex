@@ -1,4 +1,3 @@
-%\documentclass[twocolumn]{article}
 \documentclass[twocolumn,apj]{aastex63}
 \pdfoutput=1
 \usepackage{amsmath,amssymb,gensymb,color,graphicx,array,multirow,soul,rotating}
@@ -839,10 +838,62 @@ respectively, while the common-mode/gain-error interplay example is in
 \section*{Acknowledgements}
 I would like to thank Jon Sievers for first making me aware
 that subpixel errors weren't just limited to X'es around point
-sources and other small-scale effects, and Ed Wollack for useful comments.
-My work is supported by a grant from Simons Foundation.
+sources and other small-scale effects, and Ed Wollack and Lorenzo Piazzo for useful comments.
+This work was supported by a grant from the Simons Foundation (CCA 918271, PBL).
 
 \bibliographystyle{act_titles}
 \bibliography{refs}
+
+\clearpage
+
+\appendix
+
+\section{Linear pixel window}
+Let us start by considering the 1D case. Given a set of pixels $\{i\}$ with values $\{v_i\}$
+we define the linear interpolation value $d$ at some pixel coordinate $i+x$ where $x\in[0,1)$ as
+\begin{align}
+	d = (1-x)v_i + x v_{i+1}
+\end{align}
+
+\begin{figure}
+	\center
+	\includegraphics[width=6cm]{pixwin/linear_defs.pdf}
+	\caption{Definition of the quantities involved in linear interpolation.
+	Given values $\{v_i\}$ sampled at locations $\{i\}$, we define the linear interpolation
+	value $d$ at some location $i+x$ where $x\in[0,1)$ as $d = (1-x)v_i + x v_{i+1}$.}
+	\label{fig:linear-defs}
+\end{figure}
+
+This is illustrated in figure~\ref{fig:linear-defs}.
+We can generalize this to a set of samples $d_a$ with
+\begin{align}
+	d_a &= (1-x_a) v_a^\text{left} + x_a v_a^\text{right}
+\end{align}
+where $v_a^\text{left}$ and $v_a^\text{right}$ are the values of the pixel to the left and right
+of where sample $a$ points, and $x_a$ is its subpixel position. This linear system can be written
+as the following matrix equation
+\begin{align}
+	d &= P v
+\end{align}
+\begin{figure}
+	\center
+	\includegraphics[width=15cm]{pixwin/linear_p.pdf}
+	\caption{Structure of a linear-interpolation pointing matrix $P$ and its transpose $P^T$
+	for the case of a set of samples making a single scan across a row of pixels in 1D, assuming
+	wrapping boundary conditions. $x \in [0,1)$ is the subpixel coordinate of each sample.}
+	\label{fig:linear-p}
+\end{figure}
+$P$'s form will depend on the exact scanning pattern, but the final pixel window should only depend
+on each pixel being hit equally much at all subpixel locations. For simplicity, I will assume a simple
+scanning pattern that scans a single time across a row of pixels from left to right, with a constant
+scanning speed and infinite sample rate. This results in the pointing matrix $P$ taking the form
+shown in figure~\ref{fig:linear-p}.
+
+
+
+
+
+
+
 
 \end{document}
