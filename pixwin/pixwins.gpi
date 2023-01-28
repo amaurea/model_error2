@@ -1,0 +1,10 @@
+set xrange [0:0.5]
+set yrange [0:]
+set xlabel "f = k/N"
+set key above
+sinc(f) = f > 0 ? sin(pi*f)/(pi*f) : 1
+W_nn(f) = sinc(f)
+W_lin(f) = sinc(f)**2/(1.0/3*(2+cos(2*pi*f)))
+set term svg size 400,350
+set output "pixwins.svg"
+plot W_nn(x) lw 2 title "W_{nn}", W_lin(x) lw 2 lc 3 title "W_{lin}"

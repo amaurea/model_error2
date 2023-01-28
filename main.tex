@@ -39,6 +39,7 @@
 %\renewcommand\Authfont{\normalsize}
 %\renewcommand\Affilfont{\footnotesize}
 \newcommand\skn[1]{\textcolor{blue}{SKN: #1}}
+\newcommand\sinc{\,\text{sinc}}
 
 \lstset{
 	language=Python,
@@ -854,17 +855,16 @@ we define the linear interpolation value $d$ at some pixel coordinate $i+x$ wher
 \begin{align}
 	d = (1-x)v_i + x v_{i+1}
 \end{align}
-
-\begin{figure}
+This is illustrated in figure~\ref{fig:linear-defs}.
+\begin{figure}[h]
 	\center
-	\includegraphics[width=6cm]{pixwin/linear_defs.pdf}
+	\includegraphics[width=5cm]{pixwin/linear_defs.pdf}
 	\caption{Definition of the quantities involved in linear interpolation.
 	Given values $\{v_i\}$ sampled at locations $\{i\}$, we define the linear interpolation
 	value $d$ at some location $i+x$ where $x\in[0,1)$ as $d = (1-x)v_i + x v_{i+1}$.}
 	\label{fig:linear-defs}
 \end{figure}
 
-This is illustrated in figure~\ref{fig:linear-defs}.
 We can generalize this to a set of samples $d_a$ with
 \begin{align}
 	d_a &= (1-x_a) v_a^\text{left} + x_a v_a^\text{right}
@@ -875,25 +875,103 @@ as the following matrix equation
 \begin{align}
 	d &= P v
 \end{align}
-\begin{figure}
-	\center
-	\includegraphics[width=15cm]{pixwin/linear_p.pdf}
-	\caption{Structure of a linear-interpolation pointing matrix $P$ and its transpose $P^T$
-	for the case of a set of samples making a single scan across a row of pixels in 1D, assuming
-	wrapping boundary conditions. $x \in [0,1)$ is the subpixel coordinate of each sample.}
-	\label{fig:linear-p}
-\end{figure}
 $P$'s form will depend on the exact scanning pattern, but the final pixel window should only depend
 on each pixel being hit equally much at all subpixel locations. For simplicity, I will assume a simple
 scanning pattern that scans a single time across a row of pixels from left to right, with a constant
 scanning speed and infinite sample rate. This results in the pointing matrix $P$ taking the form
 shown in figure~\ref{fig:linear-p}.
+\begin{figure}[h]
+	\center
+	\includegraphics[width=12cm]{pixwin/linear_p.pdf}
+	\caption{Structure of a linear-interpolation pointing matrix $P$ and its transpose $P^T$
+	for the case of a set of samples making a single scan across a row of pixels in 1D, assuming
+	wrapping boundary conditions. $x \in [0,1)$ is the subpixel coordinate of each sample.}
+	\label{fig:linear-p}
+\end{figure}
 
+Given the set of samples $d$, the least squares estimator for the
+pixel values $v$ under uniform weighting is
+\begin{align}
+	\hat v &= (P^TP)^{-1}P^T d
+\end{align}
+The denominator $P^TP$ consists of two types of non-zero cases:
+\begin{align}
+	(P^TP)_{00} &=
+		\begin{bmatrix}\cdots & 1-x & \cdots\end{bmatrix}
+		\begin{bmatrix}\vdots\\1-x\\\vdots\end{bmatrix} +
+		\begin{bmatrix}\cdots & x & \cdots\end{bmatrix}
+		\begin{bmatrix}\vdots\\x\\\vdots\end{bmatrix}
+			= S \int_0^1 (1-x)^2 dx + S \int_0^1 x^2 dx = \frac{2}{3}S \\
+	(P^TP)_{01} &=
+		\begin{bmatrix}\cdots & 1-x & \cdots\end{bmatrix}
+		\begin{bmatrix}\vdots\\x\\\vdots\end{bmatrix}
+			= S \int_0^1 (1-x)x dx = \frac{1}{6}S
+\end{align}
+Here $S$ is the number of samples per pixel, and appears due to the summing implied by $P^T$.
+$S\rightarrow\infty$ in the integral limit we used here,
+but it will end up cancelling. With this, we end up with the denominator taking the Toeplitz form
+\begin{align}
+	P^TP &= \frac{1}{6}N\begin{bmatrix}
+		4 & 1 &   &   &  &  & 1 \\
+		1 & 4 & 1 &   &  &  & \\
+			& 1 & 4 & 1 &  &  & \\
+			&   &   & \ddots & & & \\
+		  &   &   &   & 1 & 4 & 1 \\
+		1 &   &   &   &   & 1 & 4
+	\end{bmatrix}
+\end{align}
+Toeplitz matrices are diagonal in Fourier space, so $(P^TP)^{-1}$ becomes a simple element-wise division
+there. The Fourier-diagonal is given by the Fourier transform of the first row of the Toeplitz matrix.
+Defining $A = P^TP$, it's Fourier diagonal as $\tilde a$ is given by
+\begin{align}
+	\tilde a(k) &= \frac{1}{N} \sum_{j=0}^{N-1} e^{\frac{-2\pi ikj}{N}} A_{j0}
+	= \frac{S}{N} \frac{1}{6} \Big(4 + e^{\frac{2\pi ik}{N}} + e^{\frac{-2\pi ik}{N}} \Big)
+	= \frac{S}{N} \frac{1}{3} \Big(2 + \cos\frac{2\pi k}{N}\Big)
+\end{align}
+where $N$ is the number of pixels, $i$ is the imaginary unit, $k$ is the zero-based index into $\tilde a$
+and $j$is the zero-based row index of $A$.
 
+Turning to the numerator $b = P^Td$, we recognize that it is simply the convolution of $d$ with
+the triangle function $T(x) = (1-|x|)S, x\in [-1,1]$, evaluated at each pixel center.\footnote{
+This means that $T*d$ is the same function as $b$, just $S$ times more densely sampled. Hence,
+it has the same Fourier representation up to $b$'s Nyquist frequency.}
+Using the convolution theorem, we can therefore directly write down
+\begin{align}
+	\tilde b(k) &= \tilde T(k) \cdot \tilde d(k)
+\end{align}
+We're left with computing the Fourier-space representation of the triangle function $T$.
+\begin{align}
+	\tilde T(k) &= \frac{S}{N} \int_{-1}^1 e^\frac{-2\pi i k x}{N} (1 - |x|) dx \notag \\
+	&= \frac{S}{N}\left[\int_{-1}^1 e^\frac{-2\pi i k x}{N} dx - \int_0^1 e^\frac{-2\pi i k x}{N} x dx - \int_{-1}^0 e^\frac{-2\pi k x}{N} (-x) dx\right] \notag \\
+	&= \frac{S}{N}\left[ 2 \sinc\frac{2k}{N} -  2\sinc\frac{2k}{N} + 2\Big(\frac{2\pi k}{N}\Big)^2 \Big(1-\cos\frac{2\pi k}{N}\Big)\right] \notag \\
+	&= \frac{S}{N}\Big(\sinc\frac{k}{N}\Big)^2
+\end{align}
+Combining the numerator and denominator we have
+\begin{align}
+	\hat {\tilde v} &= \frac{\tilde b(k)}{\tilde a(k)} \tilde d(k) = \frac{\big(\sinc\frac{k}{N}\big)^2}{\frac{1}{3}\big(2+\cos\frac{2\pi k}{N}\big)} \tilde d(k) = W_\text{lin}(k/N) \tilde d(k)
+\end{align}
+where the linear interpolation pixel window $W_\text{lin}(f)$ is as
+\begin{align}
+	W_\text{lin}(f) &= \frac{\sinc(f)^2}{\frac{1}{3}\big(2+\cos(2\pi f)\big)}
+\end{align}
+This pixel window is compared to the standard nearest neighbor pixel window $W_\text{nn} = \sinc(f)$
+in figure~\ref{fig:pixwins}. Their behavior is quite different. While $W_\text{nn}$ falls monotonically
+to around 0.6 at the Nyquiest frequency, $W_\text{lin}$ rises to about 1.4 at $f = 0.4$, and only then
+starts falling.
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=8cm]{pixwin/pixwins.pdf}
+	\caption{Comparison of of the 1D pixel windows for nearest neighbor mapmaking ($W_\text{nn}$)
+	and linear mapmaking ($W_\text{nn}$), plotted up to the Nyquist frequency, which is $\frac12$ in
+	these units.}
+	\label{fig:pixwins}
+\end{figure}
 
-
-
-
-
+The natural generalization of linear interpolation to two dimensions is bilinear interpolation,
+which is the composition of a horizontal and vertical one-dimensional interpolation. Because this
+operation is separable, so is the resulting pixel window. Hence
+\begin{align}
+	W_\text{lin}^\text{2D}(f_y,f_x) &= W_\text{lin}(f_y) W_\text{lin}(f_x)
+\end{align}
 
 \end{document}

@@ -1,4 +1,4 @@
-figs = subpix/model_error_toy.pdf subpix/model_resids.pdf subpix/model_error_toy_noerr.pdf  subpix/model_resid_cumps.pdf subpix/ps.pdf common_mode/common.pdf nearest_neigh/path.pdf nearest_neigh/vals.pdf subpix/model_error_toy_2d.pdf subpix/model_error_toy_2d_noise.pdf subpix/tfun_lin_1d.pdf pixwin/linear_defs.pdf pixwin/linear_p.pdf
+figs = subpix/model_error_toy.pdf subpix/model_resids.pdf subpix/model_error_toy_noerr.pdf  subpix/model_resid_cumps.pdf subpix/ps.pdf common_mode/common.pdf nearest_neigh/path.pdf nearest_neigh/vals.pdf subpix/model_error_toy_2d.pdf subpix/model_error_toy_2d_noise.pdf subpix/tfun_lin_1d.pdf pixwin/linear_defs.pdf pixwin/linear_p.pdf pixwin/pixwins.pdf
 ps_files := $(wildcard subpix/toy2d*ps.txt)
 
 main.pdf: main.tex refs.bib $(figs) FORCE
