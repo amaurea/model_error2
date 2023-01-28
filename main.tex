@@ -62,20 +62,22 @@
 
 \author[0000-0002-4478-7111]{Sigurd~Naess}
 \affil{Institute of Theoretical Astrophysics, University of Oslo, Norway}
+\author[0000-0002-6849-4217]{Thibaut~Louis}
+\affil{Université Paris-Saclay, CNRS/IN2P3, IJCLab, 91405 Orsay, France}
 
 \keywords{}
 
 \begin{abstract}
 CMB mapmaking relies on a data model to solve for the sky map, and this
 process is vulnerable to bias if the data model cannot capture the full
-behavior of the signal. I demonstrate that this bias is not just limited to
+behavior of the signal. We demonstrate that this bias is not just limited to
 small-scale effects in high-contrast regions of the sky, but can manifest
 as $\mathcal{O}(1)$ power loss on large scales in the map under conditions
 and assumptions realistic for ground-based CMB telescopes. This bias is
 invisible to simulation-based tests that do not explicitly model them,
-making it easy to miss. I investigate the common case of sub-pixel errors
+making it easy to miss. We investigate the common case of sub-pixel errors
 in more detail and demonstrate that this special case of model error can
-be eliminated using bilinear pointing matrices. Finally, I provide simple
+be eliminated using bilinear pointing matrices. Finally, we provide simple
 methods for testing for the presence of large-scale model error bias in
 the general case.
 \vspace*{8mm}
@@ -137,7 +139,7 @@ space telescope). The goal of this paper is to
 demonstrate the unintuitive and surprising result that that these effects
 can lead to $\mathcal{O}(1)$ bias on large scales everywhere
 in the map. The full scope of these errors appears to be largely
-unappreciated, and I fear that many CMB analyses
+unappreciated, and we fear that many CMB analyses
 so far suffer from uncorrected bias at low multipoles in total intensity
 due to these effects. As we shall see, it's mainly ground-based telescopes
 that are vulnerable to this bias, which usually manifests as a power
@@ -169,7 +171,7 @@ deficit at large scales, as illustrated in figure~\ref{fig:maps-2d}.
 \end{figure*}
 Subpixel errors may be both the most common and most important
 class of model errors in CMB mapmaking.
-For efficiency reasons $P$ is always\footnote{I am not aware of any
+For efficiency reasons $P$ is always\footnote{We are not aware of any
 published CMB analysis that has done something else. This includes
 destripers like MADAM \citep{madam/2010} and SRoll \citep{planck/hfi/maps/2020},
 filter+bin map-makers like those used in SPT \citep{spt/maps/2011,spt/2021} and BICEP
@@ -281,8 +283,8 @@ generalized least-squares solution for the map.\footnote{
 	The matrix $P^TN^{-1}P$ is often poorly conditioned, making it slow
 	for iterative solution methods to recover the large scales. If iteration is
 	stopped early, this could result in a lack of power at large scales.
-	This well-known phenomenon is \emph{not} the bias I'm exploring in
-	this paper, and since I solve the equation exactly it does not
+	This well-known phenomenon is \emph{not} the bias we're exploring in
+	this paper, and since we solve the equation exactly it does not
 	appear here.
 }
 In our toy example, $N^{-1} = F$, so the \emph{maximum-likelihood map}
@@ -460,7 +462,7 @@ the residual smoother.
 \end{figure}
 
 To demonstrate that the bias really is caused by subpixel errors,
-I repeated the simulation with a signal that follows the same nearest-neighbor
+we repeated the simulation with a signal that follows the same nearest-neighbor
 behavior as the data model, thus eliminating subpixel errors. The
 result is shown in figure~\ref{fig:subpix-noerr}. The bias has disappeared
 in all methods except filter+bin with transfer-function based debiasing,
@@ -471,7 +473,7 @@ filter response.
 \label{sec:toy-2d}
 The 1D toy example is useful for understanding the origin of the bias, but
 its unrealistic observing pattern makes it insufficient for exploring
-optimality/bias tradeoffs in the different methods. I therefore made a larger
+optimality/bias tradeoffs in the different methods. We therefore made a larger
 toy example where a single detector scans at constant speed across a square
 patch, sampling $N_\text{scan} = 400$ equi-spaced rows with $N_\text{scan}$
 equi-spaced samples per row, followed by a column-wise scan the same patch,
@@ -482,9 +484,9 @@ of pixel-to-sample projection. These samples will then be mapped onto a
 square grid of pixels with a side length of $N_\text{side} = 100$ using
 the different mapmaking methods.
 
-For the signal I draw realizations from a CMB-like $1/l^2$ power spectrum
+For the signal we draw realizations from a CMB-like $1/l^2$ power spectrum
 with a Gaussian beam with standard deviation $\sigma=3$ pixels. Here $l$
-is the pixel-space wave-number, which I evaluate in the higher
+is the pixel-space wave-number, which we evaluate in the higher
 resolution sample space as
 \begin{lstlisting}
 ly = np.fft.fftfreq(N_scan)[:,None] * N_side/N_scan
@@ -500,7 +502,7 @@ signal_tod = np.concatenate([signal_map.reshape(-1), signal_map.T.reshape(-1)])
 The last step here takes into account that the simulated scanning pattern covers the
 field twice, first horizontally and then vertically.
 
-For the noise I use a simple 1/f spectum $N(f) = 1 + (f/f_\text{knee})^\alpha$,
+For the noise we use a simple 1/f spectum $N(f) = 1 + (f/f_\text{knee})^\alpha$,
 with \lstinline{f = np.fft.rfftfreq(N_samp)}
 and the knee frequency $f_\text{knee}$ corresponding to 1/30th of the side length,
 $f_\text{knee} = 0.5\cdot 30/N_\text{scan} = 0.0375$ (6.7 pixel wavelength), and with
@@ -512,7 +514,7 @@ pix_pat1 = (np.mgrid[:N_scan,:N_scan]*N_side/N_scan).reshape(2,-1)
 pix_pat2 = pix_pat1[::-1]
 pix = np.concatenate([pix_pat1,pix_pat2],1)
 \end{lstlisting}
-which I use to build the nearest-neighbor pointing matrix
+which we use to build the nearest-neighbor pointing matrix
 \begin{lstlisting}
 iy, ix = np.floor(pix).astype(int)%N_side
 P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+ix)),shape=(N_samp,N_pix))
@@ -593,7 +595,7 @@ P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+
 		or is greatly reduced (DS) when switching to bilinear interpolation in the pointing matrix.
 		See figure~\ref{fig:2d-noise} for the corresponding noise spectra.
 		The wavenumber $l$ is dimensionless and with a Nyquist frequency of 0.5.
-		I interpret the upturn at $l>0.4$ as aliasing, which
+		we interpret the upturn at $l>0.4$ as aliasing, which
 		is expected and not relevant for the biases we consider here.
 	}
 	\label{fig:2d-bias}
@@ -620,13 +622,13 @@ P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+
 \label{sec:2d-cases}
 We will investigate 5 classes of nearest-neighbor maps:
 \begin{enumerate}
-	\item \dfn{bin}: Simple binned map, which I expect to be unbiased but very noisy
+	\item \dfn{bin}: Simple binned map, which we expect to be unbiased but very noisy
 	\item \dfn{ML}: Maximum-likelihood map. Ideally unbiased and optimal, but will deviate
 		from this due to model errors.
 	\item \dfn{ML w$X$}: Maximum-likelihood maps with a ``whitened'' noise model,
 		which overestimates the
 		white noise power by a factor $10^X$, $X\in\{1,2,3\}$, reducing the overall
-		correlatedness of the noise model. I expect the bias to be proportional to the
+		correlatedness of the noise model. We expect the bias to be proportional to the
 		overall dynamic range of the noise model,
 		so making the nosie model whiter should reduce bias. The cost will be suboptimal noise
 		weighting, leading to a noisier map, but it might be worth it.
@@ -639,12 +641,12 @@ We will investigate 5 classes of nearest-neighbor maps:
 	\item \dfn{FB}: Filter+bin mapmaking where a transfer function is measured using
 		simulations based on the data model, and this is deconvolved when measuring
 		the power spectrum. This is the standard approach for filter+bin mapmaking.
-		In this case only the power spectrum is debiased, not the map, so I don't
+		In this case only the power spectrum is debiased, not the map, so we don't
 		show an example map for this case.
 \end{enumerate}
 
 Since all the mapmaking methods are linear, the signal and noise can be mapped separately.
-I make 400 signal-only and noise-only data realizations, and map them using each method,
+We make 400 signal-only and noise-only data realizations, and map them using each method,
 computing the mean signal and noise power spectra.
 
 \subsubsection{Results}
@@ -666,7 +668,7 @@ come at a high cost in noise. Finally, the filter+bin map is biased even after s
 debiasing due to the simulations not capturing the subpixel behavior of the real data.
 Both the bias and noise levels are the same as maximum-likelihood in this example.
 
-To test whether the observed biases are truly caused by subpixel errors, I repeat
+To test whether the observed biases are truly caused by subpixel errors, we repeat
 the simulations with only one sample per pixel ($N_\text{scan} = N_\text{side}$).
 As expected this results in an unbiased power spectrum for all methods.\footnote{
 	Even filter+bin, which ignores mode coupling, ends up having an unbiased power
@@ -700,10 +702,10 @@ P_lin = scipy.sparse.csr_array((weights,(samps,inds)),shape=(N_samp,N_pix))
 \end{lstlisting}
 Bilinear mapmaking results in a different pixel window than
 the standard \lstinline{pixwin_nn = sinc(ly)[:,None]*sinc(lx)[None,:]}
-of nearest neighbor mapmaking. I measure this empirically using simulations
-of simple binned mapmaking, and find it to have the separable form
-\lstinline{pixwin_lin = linwin1d(ly)[:,None]*linwin1d(lx)[None,:]},
-with \lstinline{linwin1d} being plotted in figure~\ref{fig:linwin1d}.
+of nearest neighbor mapmaking. We derive this in appendix~\ref{sec:linwin},
+and the result is \lstinline{pixwin_lin = linwin1d(ly)[:,None]*linwin1d(lx)[None,:]},
+\lstinline{linwin1d(l) = sinc(l)**2/(1/3*(2-cos(2*pi*l)))}. This is plotted in
+figure~\ref{fig:linwin1d}.
 
 \begin{figure}
 	\centering
@@ -724,61 +726,216 @@ this cost is worh it, with bilinear maximum-likelihood mapmaking being bias-free
 and even lower noise than standard ML. The bias is also greatly reduced for
 destriping, but not eliminated.
 
-\section{Don't think you're safe just because you avoid subpixel errors}
-By no means all model errors have the strong impact on large scales
-that subpixel errors do. For example, gain errors typically have a
-scale-independent response while pointing errors broaden the beam, damping
-small scales but not large ones. It is, in fact, quite difficult to come up
-with other mechanisms by which model errors can cause large-scale power
-bias. One example I found requires a multi-detector system with large
-gain error error differences between the detectors, combined with a noise model where the noise is
-dominated by a long-wavelength common mode (strong correlation between detectors
-at long wavelengths). This is implemented in the program \verb|common_mode_test.py|
-(see section~\ref{sec:code})
-with the output shown in figure~\ref{fig:common}. In this example the
-large scales are biased \emph{high} and also subject to a phase shift, while
-the small scales have negligible bias.
+\section{Gain errors}
+Surprisingly, gain errors can also lead to a scale-dependent power loss.
+This happens when scales with high, correlated noise are observed with
+inconsistent gain on length-scales comparable to or shorter than the
+correlation length. We will illustrate this using a minimal 1D toy example
+with a single detector with rapidly fluctuating gain, as well as a more
+realistic 2D example with multiple detectors each with their own static
+gain error.
 
-\begin{figure}
+\subsection{1D toy example}
+Consider a single detector scanning across a line of pixels, measuring them
+once each in the presence of correlated noise with fluctuating standard deviation.
+We can model this as
+\begin{align}
+d &= m + G n \tag{1}
+\end{align}
+where $d$ is the vector of samples, $m$ is the true signal in the pixels,
+$G$ represents the fluctuating standard deviation and $n$ is the noise
+before those fluctuations are applied. The noise has covariance $N$,
+which we model as diagonal in Fourier space (so fully described by
+a power spectrum),
+\begin{align}
+\widetilde{N}_{ff'} &= \delta_{ff'} \widetilde{N}_f
+\end{align}
+where $f$ and $f'$ are Fourier indices and a tilde indicates a Fourier-space quantity.
+Meanwhile, $G$ is diagonal in pixel space, with
+each entry being random. It will be simplest to express this in terms
+of its inverse
+\begin{align}
+G^{-1} &= 1 + \Delta, & \Delta_{\alpha\beta} &= \Delta_\alpha \delta_{\alpha\beta}, & \text{cov}(\Delta_\alpha,\Delta_\beta) = \sigma^2 \delta_{\alpha\beta}
+\end{align}
+where $\alpha, \beta$ are pixel indices.
+So each entry in the diagonal of pixel-space $G^{-1}$ has independent gaussian noise with rms $\sigma^2$.
+Given this model, the maximum-likelihood solution for $m$ is
+\begin{align}
+\hat m &= (G^{-1}N^{-1}G^{-1})^{-1}G^{-1}N^{-1}G^{-1}d \tag{2}
+\end{align}
+This will be unbiased as long as the data actually follows equation 1. But what happens if the
+data is instead described by
+\begin{align}
+d &= G m + \text{noise} \tag{3}
+\end{align}
+Inserting this into equation 2 and ignoring the noise (since we care about what happens to the signal),
+we get
+\begin{align}
+\hat m &= (G^{-1}N^{-1}G^{-1})^{-1}G^{-1}N^{-1}G^{-1}Gm \notag \\
+&= \Big[\underbrace{G^{-1}N^{-1}G^{-1}}_A\Big]^{-1}\underbrace{G^{-1}N^{-1} m}_b
+\end{align}
+Inserting the expression for $G^{-1}$ we get
+\begin{align}
+A &= (1+\Delta)N^{-1}(1+\Delta) \notag \\
+  &= N^{-1} + \Delta N^{-1} \Delta + \Delta N^{-1} + N^{-1} \Delta \\
+b &= (1+\Delta)N^{-1}m = N^{-1}m + \Delta N^{-1} m
+\end{align}
+Let's see if we can simplify the terms with $\Delta$ in them. It's problematic to have a mix
+of pixel-space and Fourier-space quantities, so let's compute the Fourier-representation of
+$\Delta$: $\widetilde{\Delta} = F\Delta F^{-1}$.
+\begin{align}
+\widetilde{\Delta}_{f_1f_2} &= \frac{1}{N_s} \sum_{\alpha\beta} e^{\frac{-2\pi i \alpha f_1}{N_s}} e^{\frac{2\pi i \beta f_2}{N_s}} \Delta_{\alpha\beta} \notag \\
+&= \frac{1}{N_s} \sum_\alpha e^{\frac{2\pi i \alpha (f_2-f_1)}{N_s}} \Delta_\alpha
+\end{align}
+Using this we can evaluate the terms that go into $\widetilde{A}$ and $\widetilde{b}$.
+\begin{align}
+&(\widetilde\Delta \widetilde{N}^{-1} \widetilde{\Delta})_{f_1f_2} \notag \\
+=&\frac{1}{N_s^2} \sum_{\alpha\beta} \sum_{ff'} e^{\frac{2\pi i \alpha (f-f_1)}{N_s}}
+e^{\frac{2\pi i \beta (f_2-f')}{N_s}} \Delta_\alpha \Delta_\beta \widetilde{N}^{-1}_{ff'} \notag \\
+	=& \frac{1}{N_s^2} \sum_f \widetilde{N}^{-1}_f \sum_{\alpha\beta} e^{\frac{2\pi i \alpha (f-f_1)}{N_s}}e^{\frac{2\pi i \beta (f_2-f)}{N_s}} \Delta_\alpha \Delta_\beta
+\end{align}
+In the limit $N_s \rightarrow \infty$, $1/N_s \sum_{\alpha\ne\beta} \Delta_\alpha\Delta_\beta \rightarrow 0$.
+The Fourier-prefactors don't change this, since their magnitude is at most 1. Hence, we must have $\alpha=\beta$ in this limit.
+\begin{align}
+(\widetilde\Delta \widetilde{N}^{-1} \widetilde{\Delta})_{f_1f_2} &\stackrel{\lim N_s\rightarrow\infty}{=}
+\frac{1}{N_s^2} \sum_f \widetilde{N}^{-1}_f \sum_\alpha e^{\frac{2\pi i \alpha (f_2-f_1)}{N_s}} \Delta_\alpha^2 \notag \\
+&\stackrel{\lim N_s\rightarrow\infty}{=}
+\frac{1}{N_s} \Big(\sum_f \widetilde{N}^{-1}_f\Big) \delta_{f_1f_2}\sigma^2 \notag \\
+&= \overline{\widetilde{N}}^{-1}\sigma^2 \delta_{f_1f_2}
+\end{align}
+where we have defined $\overline{\widetilde{N}}^{-1} = 1/N_s \sum_f \widetilde{N}^{-1}$,
+which is simply the average of inverse nosie power spectrum.
+The remaining $\Delta$ terms all have just a single power of $\Delta$. These all go to
+zero in the limit $N_s \rightarrow \infty$. For example
+\begin{align}
+(\widetilde\Delta \widetilde{N}^{-1})_{f_1f_2} &= \widetilde{N}^{-1}_{f_1} \delta_{f_1 f_2} \frac{1}{N_s} \sum_\alpha e^{\frac{2\pi i \alpha (f_2-f_1)}{N_s}} \Delta_\alpha \stackrel{\lim N_s\rightarrow\infty}{=} 0
+\end{align}
+So in the end, we are left with
+\begin{align}
+\widetilde{A}_f &= \widetilde{N}^{-1}_f + \overline{\widetilde{N}}^{-1} \sigma^2 \\
+\widetilde{b}_f &= \widetilde{N}^{-1}_f \widetilde{m}_f
+\end{align}
+and thus
+\begin{align}
+\widetilde{\hat{m}} &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}}^{-1} \sigma^2} \widetilde{m}
+\end{align}
+Hence, our transfer function is
+\begin{align}
+	\text{TF}(f) &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}}^{-1} \sigma^2}
+\end{align}
+Figure~\ref{fig:gain-tf-1d} shows what this looks like for a case with
+and $1/\ell$ noise spectrum with
+$\ell_\text{knee} = 3000$, $\alpha = -3.5$ and a gain jitter $\sigma = 0.1$.
+This noise spectrum is a rough approximation of what a large ground-based CMB telescope
+might see in a band with relatively high atmospheric noise. Even a quite moderate
+gain jitter of 10\% results in a serious loss of power for $\ell < 2000$.
+\begin{figure}[ht]
 	\centering
-	\includegraphics[width=\columnwidth]{common_mode/common.pdf}
-	\caption{
-		Demonstration of large-scale bias in a multi-detector system
-		due to an interaction between strong large-scale
-		detector correlations in the noise model and large
-		relative gain errors between the detectors.
-		\dfn{signal long}: An input long-wavelength signal,
-		with the same pixelization as the output to avoid subpixel bias.
-		\dfn{ML long}: Corresponding maximum-likelihood map, which
-		exhibits both an amplitude and phase error.
-		\dfn{signal short} and \dfn{ML short}: The same, but for a
-		short-wavelength mode. Here the bias is negligible,
-		despite the model's gain errors being scale-independent.
-	}
-	\label{fig:common}
+	\includegraphics[width=8cm]{gain/gain_toy1d_bias.pdf}
+	\caption{Power loss for a 1D toy example with noise properties similar to
+	a ground-based CMB telescope with somewhat bad weather ($\ell_\text{knee}=3000$)
+	and a gain jitter of 0.1. Note: Since we plot power and not signal, this is the
+	square of the transfer function itself. Unlike the other examples, the horizontal axis
+	uses an actual multipole instead of Nyquist units.}
+	\label{fig:gain-tf-1d}
 \end{figure}
 
-While the commmon-mode/bias-interplay works as a demonstration, it is a much
-less robust error mechanism than subpixel errors, and requires quite extreme
-parameters to produce appreciable bias. In my tests it also tends to disappear
-as more data is added and crosslinking increases, and I have not been able to
-provoke large-scale bias using this method for full-scale realistic datasets
-(unlike subpixel errors!).
+In general we conjecture that if we allow $\Delta$ (the fluctuation of $G^{-1}$)
+to be correlated with covmat $S$ which is diagonal in Fourier space, then the TF should be
+\begin{align}
+\text{TF}(f) &= \frac{\widetilde{N}^{-1}(f)}{\widetilde{N}^{-1}(f) + (\widetilde{S} \ast \widetilde{N}^{-1})(f)}
+\end{align}
+Here $\ast$ means convolution. For uncorrelated $\Delta$, $\widetilde S(f) = \sigma^2$
+this reduces to the previous result.
+For super-correlated $\Delta$, $\widetilde S(f) \propto \delta(f)$, we get $\text{TF}(f) \propto 1$,
+so no transfer function, just an overall gain error. What this means is that gain fluctuations
+only cause a scale-dependent power loss if they happen on a time-scale that's not strongly
+downweighted by the noise model. Hence, gain inconsistency on timescales longer than about a
+second should not matter.
 
-It would be convenient if the difficulty in finding model error mechanisms that
-bias large scales meant that subpixel errors are the only ones one needs to
-worry about, but sadly that does not seem to be the case. In my practical
-experience with ground-based CMB mapmaking there have been cases of large-scale
-power loss where subpixel errors were responsible for less than half of the
-total bias. In these cases the difficulty in finding these mechanisms becomes
-a curse rather than a blessing, since it makes it very difficult to track down
-the source of the bias.
+\subsubsection{Reinterpretation as detector inconsistency}
+A detector with gain that fluctuates by $\mathcal{O}(10\%)$ on sub-second timescales may not be
+realistic, but we can reinterpret the time-series in the toy example above as being the interlaced
+samples from a set of $D$ detectors with highly correlated noise\footnote{
+In the toy model nearby samples have strongly correlated noise. Since nearby samples come from
+different detectors in this reinterpretation of the model, it follows that the detectors' noise
+must also be highly correlated.
+} that all point in the same direction, with detector 0 having
+samples $0,D,2D,\ldots$, detector 1 having samples $1,D+1,2D+1,\ldots$, etc.. In this case each detector
+can have a constant gain error, and the gain jitter $\sigma$ instead corresponds to the detectors'
+disagreement. Ultimately what matters is that there are multiple highly correlated observations
+that disagree on the amplitude of the signal, whether that be correlations and disagreement in
+time or correlations and disagreement between detectors, or both.
 
+\subsection{2D toy example}
+We have also demonstrated the effect of gain errors on a somewhat more realistic
+2D simulation, where an array of four detectors scans first horizontally and then vertically
+across a grid of $200\times200$ pixels, with one sample per pixel and each sample
+hitting the pixel center to avoid subpixel errors.
+
+The detectors are offset by
+(0,0), (0,1), (1,0) and (1,1) pixels from the first so that the array instantaneously
+observes more than just a single pixel, but still only a fraction of the whole image, much like
+a real detector array. Each detector has a (constant) gain error drawn
+independently from a normal distribution with a standard deviation of 0.1, and both the
+data and noise model reflect this.
+
+The noise model consists of white noise plus a
+common mode with a $1/\ell$ spectrum with a spectral index of $-3.5$ and $\ell_\text{knee} = 0.125$
+(corresponding to 1/50th of the image side length). This common mode makes the noise model
+strongly correlated on large scale, like the atmosphere does for real ground-based observations.
+The bias requires inconsistent observations to be correlated, so the common mode is crucial for
+this demonstration.
+
+We solve for binned, maximum-likelihood and filter+bin
+maps using a data model that is unaware of the gain errors (as one would be in reality,
+or they wouldn't be gain errors). This is implemented in the program \verb|gain_mode_error_2d_toy.py|
+(see section~\ref{sec:code}).
+
+As expected from the 1D toy example, the gain inconsistency results
+in a large loss of power on large scales, as shown in figure~\ref{fig:gain-tf-2d}.
+Figure~\ref{fig:gain-noise-2d} shows the corresponding relative noise spectra.
+And as we saw for subpixel errors, attempting to mitigate the bias by
+artificially reducing the correlations in the noise model is much too
+costly noise-wise to be a practical mitigation strategy.
+\begin{figure}
+	\centering
+	\includegraphics[width=8.5cm]{gain/gain_toy2d_bias.pdf}
+	\caption{Power loss for a 2D toy example with multiple detectors
+	with inconsistent but constant gain errors. Plain unweighted binning
+	(red) is unbiased, but both maximum-likelihood (blue) and filter+bin
+	(yellow) lose much of the signal at large scales (low wavenumber).
+	The light blue curves are maximum-likelihood with 10/100/1000 times
+	as much white noise in the noise model, reducing the overall correlatedness of the noise.
+	This results in less bias, but also much more noise as shown in figure~\ref{fig:gain-noise-2d}.}
+	\label{fig:gain-tf-2d}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=8.5cm]{gain/gain_toy2d_noise.pdf}
+	\caption{How noisy different mapmaking methods are compared to maximum-likelihood
+	for the 2D gain error toy example. Each graph is the ratio of the transfer-function-deconvolved
+	noise spectrum for binned mapmaking (red), whitened maximum-likelihood (light blue)
+	or filter+bin (yellow) divided by the corresponding spectrum for standard maximum-likelihood.
+	The whitened curves correspond to a noise model with 10/100/1000 times exaggerated
+	white noise floor for the bottom/middle/top light blue curve. Both these and binned mapmaking
+	are too costly to be realistic solutions to the power loss problem.}
+	\label{fig:gain-noise-2d}
+\end{figure}
+
+Detectors with strongly correlated noise on large scale and O(10\%) gain
+error inconsistency is not unrealistic for a ground-based CMB telescope,
+so it is likely that many ground-based telescopes suffer from this bias to
+some extent.
+
+\section{Easily missed in simulations}
 What makes model error bias especially insidious is that
 it is completely invisible to any simulation that does not explicitly include
 that particular type of model error. For example, a simulation where the CMB
 is read off from a simulated map using the same pointing matrix as is used
-in the mapmaking itself would be blind to subpixel errors. Given the many
+in the mapmaking itself would be blind to subpixel errors. And simulations that
+don't inject gain errors into both the data and noise model will be blind to
+power loss from gain errors. Given the many
 possible ways the real data might deviate from one's model of it, it is hard
 to be sure that one has included all the relevant types of model error in the simulations.
 It is therefore very easy to trick oneself into believing that one has an
@@ -801,8 +958,9 @@ the following tests for large-scale model error bias:
 		would be expected to have a higher dynamic range and therefore be more vulnerable.
 	\item Map the same data both using the standard noise model/filter and a
 		less optimal one an artificially reduced lower dynamic range, e.g. one that
-		underestimates the amount of correlated noise. The latter should result in
-		less a biased but noisier map, as we saw in figures~\ref{fig:2d-bias} and \ref{fig:2d-noise}.
+		underestimates the amount of correlated noise or ignores correlations between
+		detectors. The latter should result in less a biased but noisier map, as we saw
+		in figures~\ref{fig:2d-bias} and \ref{fig:2d-noise}.
 		If the maps are consistent, then large-scale model error bias is probably not an issue.
 \end{enumerate}
 
@@ -811,17 +969,17 @@ the following tests for large-scale model error bias:
 The source code and data files behind these examples is available at
 \url{https://github.com/amaurea/model_error2}. The 1D and 2D subpixel
 simulations are available in \verb|subpix/model_error_toy.py| and \verb|subpix/model_error_toy.py|
-respectively, while the common-mode/gain-error interplay example is in
-\verb|common_mode/common_mode_test.py|.
+respectively, while the gain error example is in
+\verb|gain/gain_model_error_toy_2d.py|.
 
 \section{Conclusion}
 
 \begin{enumerate}
 	\item \textbf{All CMB current mapmaking methods are vulnerable to model error bias},
 		including maximum-likelihood mapmaking, destriping and filter+bin mapmaking.
-	\item \textbf{The most common model error is subpixel errors} due to the assumption that
-		the signal is constant inside each pixel (a nearest-neighbor pointing matrix),
-		but \textbf{other types of model error can also be important}.
+	\item \textbf{subpixel errors} and \textbf{gain errors} are common examples of
+		model errors, with subpixel errors being almost universal. Other types of model error
+		can also be important.
 	\item Model error bias can manifest in unintuitive ways, with a common symptom
 		being a large ($\mathcal{O}(1)$) \textbf{loss of long-wavelength power} in the maps.
 	\item The size of the bias is proportional to the dynamic range of the filter/noise model.
@@ -837,7 +995,7 @@ respectively, while the common-mode/gain-error interplay example is in
 \end{enumerate}
 
 \section*{Acknowledgements}
-I would like to thank Jon Sievers for first making me aware
+We would like to thank Jon Sievers for first making me aware
 that subpixel errors weren't just limited to X'es around point
 sources and other small-scale effects, and Ed Wollack and Lorenzo Piazzo for useful comments.
 This work was supported by a grant from the Simons Foundation (CCA 918271, PBL).
@@ -850,6 +1008,7 @@ This work was supported by a grant from the Simons Foundation (CCA 918271, PBL).
 \appendix
 
 \section{Linear pixel window}
+\label{sec:linwin}
 Let us start by considering the 1D case. Given a set of pixels $\{i\}$ with values $\{v_i\}$
 we define the linear interpolation value $d$ at some pixel coordinate $i+x$ where $x\in[0,1)$ as
 \begin{align}
@@ -876,7 +1035,7 @@ as the following matrix equation
 	d &= P v
 \end{align}
 $P$'s form will depend on the exact scanning pattern, but the final pixel window should only depend
-on each pixel being hit equally much at all subpixel locations. For simplicity, I will assume a simple
+on each pixel being hit equally much at all subpixel locations. For simplicity, we will assume a simple
 scanning pattern that scans a single time across a row of pixels from left to right, with a constant
 scanning speed and infinite sample rate. This results in the pointing matrix $P$ taking the form
 shown in figure~\ref{fig:linear-p}.
