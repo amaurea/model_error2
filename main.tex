@@ -75,8 +75,8 @@ small-scale effects in high-contrast regions of the sky, but can manifest
 as $\mathcal{O}(1)$ power loss on large scales in the map under conditions
 and assumptions realistic for ground-based CMB telescopes. This bias is
 invisible to simulation-based tests that do not explicitly model them,
-making it easy to miss. We investigate the common case of sub-pixel errors
-in more detail and demonstrate that this special case of model error can
+making it easy to miss. We investigate the common cases of sub-pixel errors
+and gain errors in more detail and demonstrate that subpixel bias can
 be eliminated using bilinear pointing matrices. Finally, we provide simple
 methods for testing for the presence of large-scale model error bias in
 the general case.
@@ -772,9 +772,10 @@ Inserting this into equation 2 and ignoring the noise (since we care about what 
 we get
 \begin{align}
 \hat m &= (G^{-1}N^{-1}G^{-1})^{-1}G^{-1}N^{-1}G^{-1}Gm \notag \\
-&= \Big[\underbrace{G^{-1}N^{-1}G^{-1}}_A\Big]^{-1}\underbrace{G^{-1}N^{-1} m}_b
+&= \Big[\underbrace{G^{-1}N^{-1}G^{-1}}_A\Big]^{-1}\underbrace{G^{-1}N^{-1} m}_b \label{eq:gaincancel}
 \end{align}
-Inserting the expression for $G^{-1}$ we get
+Notice that two of the $G$'s in the numerator cancelled. As we shall see, this is
+the ultimate cause of the power loss. Inserting the expression for $G^{-1}$ we get
 \begin{align}
 A &= (1+\Delta)N^{-1}(1+\Delta) \notag \\
   &= N^{-1} + \Delta N^{-1} \Delta + \Delta N^{-1} + N^{-1} \Delta \\
@@ -823,6 +824,9 @@ Hence, our transfer function is
 \begin{align}
 	\text{TF}(f) &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}}^{-1} \sigma^2}
 \end{align}
+The reason why the $\sigma^2$ term is only present in the denominator is that the
+$G$'s cancelled in equation~\ref{eq:gaincancel}. This happened because both the data and noise model
+were affected by the gain errors.
 Figure~\ref{fig:gain-tf-1d} shows what this looks like for a case with
 and $1/\ell$ noise spectrum with
 $\ell_\text{knee} = 3000$, $\alpha = -3.5$ and a gain jitter $\sigma = 0.1$.
@@ -894,10 +898,13 @@ or they wouldn't be gain errors). This is implemented in the program \verb|gain_
 
 As expected from the 1D toy example, the gain inconsistency results
 in a large loss of power on large scales, as shown in figure~\ref{fig:gain-tf-2d}.
+Filter+bin mapmaking is no less vulnerable to this bias than maximum-likelihood.
 Figure~\ref{fig:gain-noise-2d} shows the corresponding relative noise spectra.
 And as we saw for subpixel errors, attempting to mitigate the bias by
 artificially reducing the correlations in the noise model is much too
-costly noise-wise to be a practical mitigation strategy.
+costly noise-wise to be a practical mitigation strategy.\footnote{In filter+bin
+mapmaking the equivalent to reducing the correlations in the noise model would be
+to filter less.}
 \begin{figure}
 	\centering
 	\includegraphics[width=8.5cm]{gain/gain_toy2d_bias.pdf}
@@ -919,7 +926,8 @@ costly noise-wise to be a practical mitigation strategy.
 	or filter+bin (yellow) divided by the corresponding spectrum for standard maximum-likelihood.
 	The whitened curves correspond to a noise model with 10/100/1000 times exaggerated
 	white noise floor for the bottom/middle/top light blue curve. Both these and binned mapmaking
-	are too costly to be realistic solutions to the power loss problem.}
+	are too costly to be realistic solutions to the power loss problem. Note the logarithmic
+	y axis and that the binned curve has been divided by $10^4$ to fit in the graph.}
 	\label{fig:gain-noise-2d}
 \end{figure}
 
@@ -941,11 +949,11 @@ to be sure that one has included all the relevant types of model error in the si
 It is therefore very easy to trick oneself into believing that one has an
 unbiased analysis pipeline while there are in fact $\mathcal{O}(1)$ biases remaining.
 
-\section{Useful tests}
+\section{Detection strategies}
 The unintuitive large-scale effects of model errors rely on the interaction
 between model errors and non-local weighting/filtering. A noise model (or filter) with
 a large dynamic range, such as one capturing the huge ratio between the long-wavelength
-and short-wavelength noise power for ground-based CMB telescopes, is therefore
+and short-wavelength noise power typical for ground-based CMB telescopes, is therefore
 much more vulnerable to large-scale power loss than one appropriate for a
 space-based telescopes which have almost flat noise power spectra. This suggests
 the following tests for large-scale model error bias:
@@ -975,11 +983,14 @@ respectively, while the gain error example is in
 \section{Conclusion}
 
 \begin{enumerate}
-	\item \textbf{All CMB current mapmaking methods are vulnerable to model error bias},
+	\item \textbf{All current CMB mapmaking methods are vulnerable to model error bias},
 		including maximum-likelihood mapmaking, destriping and filter+bin mapmaking.
-	\item \textbf{subpixel errors} and \textbf{gain errors} are common examples of
-		model errors, with subpixel errors being almost universal. Other types of model error
-		can also be important.
+	\item \textbf{Subpixel errors} and \textbf{gain errors} are common examples of
+		model errors, with subpixel errors being almost universal.
+		Subpixel bias is caused by the likelihood disfavoring the sharp edges implied by
+		the pixelization, causing it to discard low-S/N signal. Gain errors enter into inverse
+		variance weighting squared, leading to a noise bias term that dominates strongly downweighted/filtered scales.
+		Other types of model error can also be important.
 	\item Model error bias can manifest in unintuitive ways, with a common symptom
 		being a large ($\mathcal{O}(1)$) \textbf{loss of long-wavelength power} in the maps.
 	\item The size of the bias is proportional to the dynamic range of the filter/noise model.
@@ -995,7 +1006,7 @@ respectively, while the gain error example is in
 \end{enumerate}
 
 \section*{Acknowledgements}
-We would like to thank Jon Sievers for first making me aware
+We would like to thank Jon Sievers for first making us aware
 that subpixel errors weren't just limited to X'es around point
 sources and other small-scale effects, and Ed Wollack and Lorenzo Piazzo for useful comments.
 This work was supported by a grant from the Simons Foundation (CCA 918271, PBL).
