@@ -1,7 +1,9 @@
-\documentclass[twocolumn,apj]{aastex63}
+\documentclass{aa}
 \pdfoutput=1
+\usepackage[varg]{txfonts}
 \usepackage{amsmath,amssymb,gensymb,color,graphicx,array,multirow,soul,rotating}
 \usepackage{natbib,multirow,placeins,textcomp,subfigure}
+\bibpunct{(}{)}{;}{a}{}{,} % to follow the A&A style
 \usepackage[outline]{contour}
 %\usepackage[margin=14mm,top=10mm]{geometry}
 \usepackage[utf8]{inputenc}
@@ -54,21 +56,16 @@
 
 \begin{document}
 
-%\title{Large-scale power loss from subtle mapmaking model errors}
-%\title{Ground based CMB maps vulnerable to large-scale power loss}
-%\title{Sub-pixel errors can bias the largest scales during mapmaking}
-%\title{impact of sub-pixel errors on the recovery of large angular scales in CMB mapmaking}
 \title{Large-scale power loss in ground-based CMB mapmaking}
 
-\author[0000-0002-4478-7111]{Sigurd~Naess}
-\affil{Institute of Theoretical Astrophysics, University of Oslo, Norway}
-\author[0000-0002-6849-4217]{Thibaut~Louis}
-\affil{Université Paris-Saclay, CNRS/IN2P3, IJCLab, 91405 Orsay, France}
+\author{Sigurd~Naess\inst{1}\thanks{ORCID 0000-0002-4478-7111}
+\and Thibaut~Louis\inst{2}\thanks{ORCID 0000-0002-6849-4217}}
+\institute{Institute of Theoretical Astrophysics, University of Oslo, Norway
+\and Université Paris-Saclay, CNRS/IN2P3, IJCLab, 91405 Orsay, France}
 
-\keywords{}
+\keywords{cosmic background radiation -- Methods: data analysis -- Cosmology: observations}
 
-\begin{abstract}
-CMB mapmaking relies on a data model to solve for the sky map, and this
+\abstract{CMB mapmaking relies on a data model to solve for the sky map, and this
 process is vulnerable to bias if the data model cannot capture the full
 behavior of the signal. We demonstrate that this bias is not just limited to
 small-scale effects in high-contrast regions of the sky, but can manifest
@@ -79,9 +76,9 @@ making it easy to miss. We investigate the common cases of sub-pixel errors
 and gain errors in more detail and demonstrate that subpixel bias can
 be eliminated using bilinear pointing matrices. Finally, we provide simple
 methods for testing for the presence of large-scale model error bias in
-the general case.
-\vspace*{8mm}
-\end{abstract}
+the general case.}
+
+\maketitle
 
 \section{Introduction}
 
@@ -520,7 +517,7 @@ iy, ix = np.floor(pix).astype(int)%N_side
 P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+ix)),shape=(N_samp,N_pix))
 \end{lstlisting}
 
-\begin{figure*}[p]
+\begin{figure*}
 	\centering
 	\hspace*{-10mm}\begin{closetabcols}
 		\begin{tabular}{C{13mm}ccm{1mm}|m{1mm}ccC{14mm}}
@@ -1018,13 +1015,14 @@ respectively, while the gain error example is in
 		and checking if this leads to consistent power spectra.
 \end{enumerate}
 
-\section*{Acknowledgements}
+\begin{acknowledgements}
 We would like to thank Jon Sievers for first making us aware
 that subpixel errors weren't just limited to X'es around point
 sources and other small-scale effects, and Ed Wollack and Lorenzo Piazzo for useful comments.
 This work was supported by a grant from the Simons Foundation (CCA 918271, PBL).
+\end{acknowledgements}
 
-\bibliographystyle{act_titles}
+\bibliographystyle{aa}
 \bibliography{refs}
 
 \clearpage
@@ -1063,14 +1061,14 @@ on each pixel being hit equally much at all subpixel locations. For simplicity, 
 scanning pattern that scans a single time across a row of pixels from left to right, with a constant
 scanning speed and infinite sample rate. This results in the pointing matrix $P$ taking the form
 shown in figure~\ref{fig:linear-p}.
-\begin{figure}[h]
+\begin{figure*}[htb]
 	\center
 	\includegraphics[width=12cm]{pixwin/linear_p.pdf}
 	\caption{Structure of a linear-interpolation pointing matrix $P$ and its transpose $P^T$
 	for the case of a set of samples making a single scan across a row of pixels in 1D, assuming
 	wrapping boundary conditions. $x \in [0,1)$ is the subpixel coordinate of each sample.}
 	\label{fig:linear-p}
-\end{figure}
+\end{figure*}
 
 Given the set of samples $d$, the least squares estimator for the
 pixel values $v$ under uniform weighting is
@@ -1083,8 +1081,8 @@ The denominator $P^TP$ consists of two types of non-zero cases:
 		\begin{bmatrix}\cdots & 1-x & \cdots\end{bmatrix}
 		\begin{bmatrix}\vdots\\1-x\\\vdots\end{bmatrix} +
 		\begin{bmatrix}\cdots & x & \cdots\end{bmatrix}
-		\begin{bmatrix}\vdots\\x\\\vdots\end{bmatrix}
-			= S \int_0^1 (1-x)^2 dx + S \int_0^1 x^2 dx = \frac{2}{3}S \\
+		\begin{bmatrix}\vdots\\x\\\vdots\end{bmatrix} \notag \\
+			&= S \int_0^1 (1-x)^2 dx + S \int_0^1 x^2 dx = \frac{2}{3}S \\
 	(P^TP)_{01} &=
 		\begin{bmatrix}\cdots & 1-x & \cdots\end{bmatrix}
 		\begin{bmatrix}\vdots\\x\\\vdots\end{bmatrix}
