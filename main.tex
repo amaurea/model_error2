@@ -139,8 +139,8 @@ space telescope). The goal of this paper is to
 demonstrate the unintuitive and surprising result that that these effects
 can lead to $\mathcal{O}(1)$ bias on large scales everywhere
 in the map. The full scope of these errors appears to be largely
-unappreciated, and we fear that many CMB analyses
-so far suffer from uncorrected bias at low multipoles in total intensity
+unappreciated, and we fear that some published results
+may suffer from uncorrected bias at low multipoles in total intensity
 due to these effects. As we shall see, it's mainly ground-based telescopes
 that are vulnerable to this bias, which usually manifests as a power
 deficit at large scales, as illustrated in figure~\ref{fig:maps-2d}.
@@ -835,7 +835,7 @@ and thus
 \end{align}
 Hence, our transfer function is
 \begin{align}
-	\text{TF}(f) &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}}^{-1} \sigma^2}
+	\text{TF}(f) &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}}^{-1} \sigma^2} \label{eq:gain-tf-1d}
 \end{align}
 The reason why the $\sigma^2$ term is only present in the denominator is that the
 $G$'s cancelled in equation~\ref{eq:gaincancel}. This happened because both the data and noise model
@@ -975,7 +975,7 @@ the following tests for large-scale model error bias:
 		This is reliable but comes at the cost of being able to make an independent measurement.
 	\item Split the data into subsets with different ratios of correlated noise to white noise
 		and check their consistency. This could for example be a split by the
-		level of precipitable water-vapour (PWV) in the atmosphere. High-PWV-data
+		level of precipitable water-vapor (PWV) in the atmosphere. High-PWV-data
 		would be expected to have a higher dynamic range and therefore be more vulnerable.
 	\item Map the same data both using the standard noise model/filter and a
 		less optimal one an artificially reduced lower dynamic range, e.g. one that
@@ -984,6 +984,58 @@ the following tests for large-scale model error bias:
 		in figures~\ref{fig:2d-bias} and \ref{fig:2d-noise}.
 		If the maps are consistent, then large-scale model error bias is probably not an issue.
 \end{enumerate}
+
+\section{Who is at risk?}
+While model error bias can be expected to always be present at a
+low level, it only becomes important when dealing with very large amounts
+of correlated noise (e.g. much more noise on some scales than others,
+see equation~\ref{eq:gain-tf-1d}). Therefore, the telescopes at risk are
+those that fulfil the following criteria.
+\begin{enumerate}
+	\item Observe from the ground.
+	\item Care about total intensity, since the atmosphere is mostly unpolarized.
+	\item Observe at frequencies with high water vapor emission, since
+		water vapor is the main source of clumpiness in the atmospheric emission.
+		At CMB-relevant frequencies, the lower the frequency the safer.
+		Frequencies $<60$ GHz should be relatively safe while $>200$ GHz are
+		particularly vulnerable.
+	\item Have sensitive detectors, since lower white noise means a larger
+		ratio between this noise and the correlated noise from the atmosphere.
+	\item Have a large number of detectors with a low angular separation on
+		the sky, since this increases their correlatedness.
+\end{enumerate}
+There aren't that many telescopes that fulfill these criteria, as ground-based
+telescopes have focused mostly on polarization or lower frequencies. After reviewing
+\href{https://lambda.gsfc.nasa.gov/product/expt}{LAMBDA's list of CMB experiments}
+we found four $>60$ GHz ground-based CMB telescope projects started after year 2000\footnote{
+	Ground-based projects older than this are too insensitive for this bias to be visible even if
+	it were to be present.}
+with published TT spectra for $\ell < 2000$: ACBAR, ACT, BICEP and SPT. Of these,
+ACBAR, ACT \citep{choi/etal:2020} and SPT-3G \citep{spt3g-ps-2022} cut their low-$\ell$ data, indicating problems recovering
+these scales. Meanwhile BICEP \citep{barkats/etal/2013, bicep-keck-ps-2018} and SPTpol \citep{sptpol-ps-2018} publish TT spectra down to $\ell < 100$ with
+no signs of problems. The only case where we could see clear evidence for large-scale
+power-loss is in the multipoles just above the multipole cutoff in ACT, as seen in
+figure~\ref{fig:act-dr4-tf} (reproduced from \citet{choi/etal:2020}).
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=\columnwidth]{act_dr4_tf.png}
+	\caption{Large-scale power loss in ACT DR4. The ACT TT power spectrum (blue)
+	and the ACT-Planck cross-spectrum (orange) are both low at $\ell \lesssim 800$
+	compared to the Planck power spectrum (green) in the two ACT patches shown.
+	This is especially clear in the third panel, which shows the difference between
+	ACT and the ACT-Planck cross. Reproduced from \citet{choi/etal:2020}.}
+	\label{fig:act-dr4-tf}
+\end{figure}
+
+So to summarize, why hasn't this been noticed before? Ground-based CMB surveys
+have mostly focused on polarization, where this effect is orders of magnitude
+smaller. Those that do publish total intensity power spectra
+have only reached the high enough sensitivity and detector counts for it to
+become noticable in the last decade. Given how frequently ground-based CMB
+surveys cut $\ell \lesssim 500-1000$ it is tempting to speculate that model error
+bias may have caused null tests to fail at low $\ell$ without being
+identified as the culprit.
 
 \section{Source code}
 \label{sec:code}
