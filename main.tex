@@ -223,7 +223,9 @@ fit the data.
 \subsection{1D toy example}
 To illustrate the interaction between a nearest neighbor pointing matrix's
 subpixel errors and a likelihood where large scales have low weight, let
-us consider a simple 1D case where 100 samples scan uniformly across 10 pixels:
+us consider a simple 1D case where 100 samples scan uniformly across 10 pixels\footnote{
+A real survey might have $\sim 3$ samples per pixel per scan for a single detector,
+but would end up with much more than that across multiple scans and multiple detectors.}:
 \begin{lstlisting}
 npix  = 10
 nsamp = 100
@@ -815,9 +817,9 @@ The Fourier-prefactors don't change this, since their magnitude is at most 1. He
 \frac{1}{N_s^2} \sum_f \widetilde{N}^{-1}_f \sum_\alpha e^{\frac{2\pi i \alpha (f_2-f_1)}{N_s}} \Delta_\alpha^2 \notag \\
 &\stackrel{\lim N_s\rightarrow\infty}{=}
 \frac{1}{N_s} \Big(\sum_f \widetilde{N}^{-1}_f\Big) \delta_{f_1f_2}\sigma^2 \notag \\
-&= \overline{\widetilde{N}}^{-1}\sigma^2 \delta_{f_1f_2}
+&= \overline{\widetilde{N}^{-1}}\sigma^2 \delta_{f_1f_2}
 \end{align}
-where we have defined $\overline{\widetilde{N}}^{-1} = 1/N_s \sum_f \widetilde{N}^{-1}$,
+where we have defined $\overline{\widetilde{N}^{-1}} = 1/N_s \sum_f \widetilde{N}^{-1}$,
 which is simply the average of inverse noise power spectrum.
 The remaining $\Delta$ terms all have just a single power of $\Delta$. These all go to
 zero in the limit $N_s \rightarrow \infty$. For example
@@ -826,16 +828,16 @@ zero in the limit $N_s \rightarrow \infty$. For example
 \end{align}
 So in the end, we are left with
 \begin{align}
-\widetilde{A}_f &= \widetilde{N}^{-1}_f + \overline{\widetilde{N}}^{-1} \sigma^2 \\
+\widetilde{A}_f &= \widetilde{N}^{-1}_f + \overline{\widetilde{N}^{-1}} \sigma^2 \\
 \widetilde{b}_f &= \widetilde{N}^{-1}_f \widetilde{m}_f + \text{noise}
 \end{align}
 and thus
 \begin{align}
-\langle\widetilde{\hat{m}}\rangle &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}}^{-1} \sigma^2} \widetilde{m}
+\langle\widetilde{\hat{m}}\rangle &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}^{-1}} \sigma^2} \widetilde{m}
 \end{align}
 Hence, our transfer function is
 \begin{align}
-	\text{TF}(f) &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}}^{-1} \sigma^2} \label{eq:gain-tf-1d}
+\text{TF}(f) &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}^{-1}} \sigma^2} \label{eq:gain-tf-1d}
 \end{align}
 The reason why the $\sigma^2$ term is only present in the denominator is that the
 $G$'s cancelled in equation~\ref{eq:gaincancel}. This happened because both the data and noise model
