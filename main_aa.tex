@@ -109,7 +109,7 @@ small, but by combining a large number of samples with knowledge
 of which direction the telescope was pointing at any time, it's
 possible to reconstruct an image of the sky. There are several
 ways of doing this, with the most common being maximum-likelihood,
-filter+bin and destriping. These all start by modelling the
+filter+bin and destriping. These all start by modeling the
 telescope data as \citep{tegmark-mapmaking}
 \begin{align}
 	d = Pm + n \label{eq:model}
@@ -324,7 +324,7 @@ them through the filter+bin process, and comparing the properties
 of the input and output images \citep[e.g.][]{spt-bmodes-2020}. The standard way of doing this is
 by assuming that equation~\ref{eq:model} describes the observation
 process, and that the bias can be described by a \emph{transfer function}:
-a simple independent scaling of each fourier mode. Under
+a simple independent scaling of each Fourier mode. Under
 these assumptions, we can measure and correct the bias as follows.
 \begin{lstlisting}
 nsim = 1000
@@ -341,7 +341,7 @@ map_fb_detrans = np.fft.irfft(np.fft.rfft(map_fb)/tf, n=npix)
 
 \subsubsection{Destriping}
 Destriping splits the noise into a correlated and uncorrelated part,
-and models the correlated noise as as a series of slowly changing
+and models the correlated noise as a series of slowly changing
 degrees of freedom to be solved for jointly with the sky image itself
 \citep{descart-destriper,planck-destriping}.
 The data is modeled as
@@ -414,24 +414,24 @@ Maximum likelihood, filter+bin with observation matrix debiasing and destriping
 (which are all equivalent in the limit we consider here) are strongly biased,
 with the signal only being recovered with 1/3 of its real amplitude.
 
-The situation is even worse for for filter+bin with simulation-based debiasing,
+The situation is even worse for filter+bin with simulation-based debiasing,
 as this suffers from an additional bias due to assuming that the Fourier modes
 are independent.\footnote{This additional bias disappears if the simulations
 have exactly the same statistical properties as the real signal we wish to
 recover.}
 
 \subsubsection{Explanation}
-To see why inaccuracies in modelling the signal at sub-pixel scales can bias
+To see why inaccuracies in modeling the signal at sub-pixel scales can bias
 the largest scales in the map, let us consider the example in figure~\ref{fig:nearest-neigh},
 where a detector measures a smooth, large-scale signal while moving across a few
 pixels. With a nearest-neighbor pointing matrix it is impossible to model this
 smooth signal: the model for each sample is simply that of the closest pixel,
 regardless of where inside that pixel it is. The model therefore looks like
-a staircase-like function in time domain.
+a staircase-like function in the time domain.
 
 Given that we can't exactly match the signal, what is the best approximation?
-Let us consider two very different alterantives. \dfn{Model A}: The value in each pixel
-is the average of the samples that hits it, making the model curve trace the
+Let us consider two very different alternatives. \dfn{Model A}: The value in each pixel
+is the average of the samples that hit it, making the model curve trace the
 smooth signal as closely as it can. This is the green curve in figure~\ref{fig:nearest-neigh},
 and has the sawtooth-like residual shown with the blue curve. It is probably the
 model most people would choose if asked to draw one manually.
@@ -441,7 +441,7 @@ for a ground-based telescope, like the one shown in figure~\ref{fig:ps}, it
 will actually have a higher likelihood (lower $\chi^2 = r^TN^{-1}r$
 where $r$ is the residual) than model A. The reason is that while model B has a much
 larger residual than model A, model B's residual is smooth and hence has most of its
-power at low frequency in time domain where $N^{-1}$ is very small. Meanwhile, model A's
+power at low frequency in the time domain where $N^{-1}$ is very small. Meanwhile, model A's
 residual extends to all frequencies due to its jagged nature, including the costly high
 frequencies. The actual maximum-likelihood solution will be intermediate between these
 two cases, sacrificing some but not all of the large-scale power in the model to make
@@ -564,12 +564,12 @@ P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+
 		Example signal and noise maps for the different mapmaking methods.
 		The top left map is the input signal, which is directly evaluated
 		at 4x higher resolution than what is used for reconstructing the output maps.
-		All output maps were built built from the same data and assume a nearest neighbor pointing matrix,
+		All output maps were built from the same data and assume a nearest neighbor pointing matrix,
 		except for the last row where a bilinear pointing matrix was used.
 		The color range is the same for all panels.
 		The binned map (top right) is bias-free but has uselessly high noise. Maximum likelihood (ML)
 		and destriping with short baselengths (with (DS+) and without (DS) baseline amplitude prior,
-		which only matters for the shortest baseline)
+		which only matters for the shortest baselines)
 		are all low-noise but biased on large scales. This bias goes away as the noise model
 		is artificially whitened (ML w$X$) or the baseline length is increased (for destriping),
 		but this comes at a cost of increased noise on all scales.
@@ -605,7 +605,7 @@ P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+
 		Comparison of the optimality for the methods defined in section~\ref{sec:2d-cases}, measured
 		as the debiased noise power spectrum (using the bias measurements from figure~\ref{fig:2d-bias})
 		for each method relative to that of bilinear maximum-likelihood mapmaking.
-		Note the logarithmic vertical axis, and that binned case was divided by $10^3$
+		Note the logarithmic vertical axis, and that the binned case was divided by $10^3$
 		to bring it partially inside the plot bounds.
 		The wavenumber $l$ is dimensionless and with a Nyquist frequency of 0.5.
 		It's clear that simple bias mitigation
@@ -783,7 +783,7 @@ It will be simplest to express this in terms of its inverse
 G^{-1} &= I + \Delta, & \Delta_{\alpha\beta} &= \Delta_\alpha \delta_{\alpha\beta}, & \text{cov}(\Delta_\alpha,\Delta_\beta) = \sigma^2 \delta_{\alpha\beta}
 \end{align}
 where $\alpha, \beta$ are pixel indices. So each entry in the diagonal of pixel-space $G^{-1}$
-has independent gaussian noise with rms $\sigma$. Inserting this expression for $G^{-1}$ we get
+has independent Gaussian noise with rms $\sigma$. Inserting this expression for $G^{-1}$ we get
 \begin{align}
 A &= (I+\Delta)N^{-1}(I+\Delta) \notag \\
   &= N^{-1} + \Delta N^{-1} \Delta + \Delta N^{-1} + N^{-1} \Delta \\
@@ -812,10 +812,10 @@ The Fourier-prefactors don't change this, since their magnitude is at most 1. He
 \frac{1}{N_s^2} \sum_f \widetilde{N}^{-1}_f \sum_\alpha e^{\frac{2\pi i \alpha (f_2-f_1)}{N_s}} \Delta_\alpha^2 \notag \\
 &\stackrel{\lim N_s\rightarrow\infty}{=}
 \frac{1}{N_s} \Big(\sum_f \widetilde{N}^{-1}_f\Big) \delta_{f_1f_2}\sigma^2 \notag \\
-&= \overline{\widetilde{N}}^{-1}\sigma^2 \delta_{f_1f_2}
+&= \overline{\widetilde{N}^{-1}}\sigma^2 \delta_{f_1f_2}
 \end{align}
-where we have defined $\overline{\widetilde{N}}^{-1} = 1/N_s \sum_f \widetilde{N}^{-1}$,
-which is simply the average of inverse noise power spectrum.
+where we have defined $\overline{\widetilde{N}^{-1}} = 1/N_s \sum_f \widetilde{N}^{-1}$,
+which is simply the average over the inverse noise power spectrum.
 The remaining $\Delta$ terms all have just a single power of $\Delta$. These all go to
 zero in the limit $N_s \rightarrow \infty$. For example
 \begin{align}
@@ -823,16 +823,16 @@ zero in the limit $N_s \rightarrow \infty$. For example
 \end{align}
 So in the end, we are left with
 \begin{align}
-\widetilde{A}_f &= \widetilde{N}^{-1}_f + \overline{\widetilde{N}}^{-1} \sigma^2 \\
+\widetilde{A}_f &= \widetilde{N}^{-1}_f + \overline{\widetilde{N}^{-1}} \sigma^2 \\
 \widetilde{b}_f &= \widetilde{N}^{-1}_f \widetilde{m}_f + \text{noise}
 \end{align}
 and thus
 \begin{align}
-\langle\widetilde{\hat{m}}\rangle &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}}^{-1} \sigma^2} \widetilde{m}
+\langle\widetilde{\hat{m}}\rangle &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}^{-1}} \sigma^2} \widetilde{m}
 \end{align}
 Hence, our transfer function is
 \begin{align}
-	\text{TF}(f) &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}}^{-1} \sigma^2}
+\text{TF}(f) &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}^{-1}} \sigma^2} \label{eq:gain-tf-1d}
 \end{align}
 The reason why the $\sigma^2$ term is only present in the denominator is that the
 $G$'s cancelled in equation~\ref{eq:gaincancel}. This happened because both the data and noise model
@@ -897,7 +897,7 @@ data and noise model reflect this.
 The noise model consists of white noise plus a
 common mode with a $1/\ell$ spectrum with a spectral index of $-3.5$ and $\ell_\text{knee} = 0.125$
 (corresponding to 1/50th of the image side length). This common mode makes the noise model
-strongly correlated on large scale, like the atmosphere does for real ground-based observations.
+strongly correlated on large scales, like the atmosphere does for real ground-based observations.
 The bias requires inconsistent observations to be correlated, so the common mode is crucial for
 this demonstration.
 
@@ -941,8 +941,8 @@ to filter less.}
 	\label{fig:gain-noise-2d}
 \end{figure}
 
-Detectors with strongly correlated noise on large scale and O(10\%) gain
-error inconsistency is not unrealistic for a ground-based CMB telescope,
+Detectors with strongly correlated noise on large scales and O(10\%) gain
+error inconsistency are not unrealistic for a ground-based CMB telescope,
 so it is likely that many ground-based telescopes suffer from this bias to
 some extent.
 
@@ -960,11 +960,11 @@ It is therefore very easy to trick oneself into believing that one has an
 unbiased analysis pipeline while there are in fact $\mathcal{O}(1)$ biases remaining.
 
 \section{Detection strategies}
-The unintuitive large-scale effects of model errors rely on the interaction
+The unintuitive large-scale effects of model errors originate from the interaction
 between model errors and non-local weighting/filtering. A noise model (or filter) with
 a large dynamic range, such as one capturing the huge ratio between the long-wavelength
 and short-wavelength noise power typical for ground-based CMB telescopes, is therefore
-much more vulnerable to large-scale power loss than one appropriate for a
+much more vulnerable to large-scale power loss than one appropriate for
 space-based telescopes which have almost flat noise power spectra. This suggests
 the following tests for large-scale model error bias:
 \begin{enumerate}
@@ -987,7 +987,7 @@ While model error bias can be expected to always be present at a
 low level, it only becomes important when dealing with very large amounts
 of correlated noise (e.g. much more noise on some scales than others,
 see equation~\ref{eq:gain-tf-1d}). Therefore, the telescopes at risk are
-those that fulfil the following criteria.
+those that fulfill the following criteria.
 \begin{enumerate}
 	\item Observe from the ground.
 	\item Care about total intensity, since the atmosphere is mostly unpolarized.

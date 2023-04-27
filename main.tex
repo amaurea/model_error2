@@ -112,7 +112,7 @@ small, but by combining a large number of samples with knowledge
 of which direction the telescope was pointing at any time, it's
 possible to reconstruct an image of the sky. There are several
 ways of doing this, with the most common being maximum-likelihood,
-filter+bin and destriping. These all start by modelling the
+filter+bin and destriping. These all start by modeling the
 telescope data as \citep{tegmark-mapmaking}
 \begin{align}
 	d = Pm + n \label{eq:model}
@@ -426,7 +426,7 @@ have exactly the same statistical properties as the real signal we wish to
 recover.}
 
 \subsubsection{Explanation}
-To see why inaccuracies in modelling the signal at sub-pixel scales can bias
+To see why inaccuracies in modeling the signal at sub-pixel scales can bias
 the largest scales in the map, let us consider the example in figure~\ref{fig:nearest-neigh},
 where a detector measures a smooth, large-scale signal while moving across a few
 pixels. With a nearest-neighbor pointing matrix it is impossible to model this
@@ -992,7 +992,7 @@ While model error bias can be expected to always be present at a
 low level, it only becomes important when dealing with very large amounts
 of correlated noise (e.g. much more noise on some scales than others,
 see equation~\ref{eq:gain-tf-1d}). Therefore, the telescopes at risk are
-those that fulfil the following criteria.
+those that fulfill the following criteria.
 \begin{enumerate}
 	\item Observe from the ground.
 	\item Care about total intensity, since the atmosphere is mostly unpolarized.
