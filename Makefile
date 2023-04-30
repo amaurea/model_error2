@@ -1,11 +1,13 @@
 figs = subpix/model_error_toy.pdf subpix/model_resids.pdf subpix/model_error_toy_noerr.pdf  subpix/model_resid_cumps.pdf subpix/ps.pdf common_mode/common.pdf nearest_neigh/path.pdf nearest_neigh/vals.pdf subpix/model_error_toy_2d.pdf subpix/model_error_toy_2d_noise.pdf subpix/tfun_lin_1d.pdf pixwin/linear_defs.pdf pixwin/linear_p.pdf pixwin/pixwins.pdf gain/gain_toy1d_bias.pdf gain/gain_toy2d_noise.pdf gain/gain_toy2d_bias.pdf
+figs_aa = subpix/model_error_toy_aa.pdf subpix/model_resids_aa.pdf subpix/model_error_toy_noerr_aa.pdf subpix/model_resid_cumps_aa.pdf subpix/ps_aa.pdf common_mode/common_aa.pdf nearest_neigh/path.pdf nearest_neigh/vals.pdf subpix/model_error_toy_2d_aa.pdf subpix/model_error_toy_2d_noise_aa.pdf subpix/tfun_lin_1d_aa.pdf pixwin/linear_defs_aa.pdf pixwin/linear_p_aa.pdf pixwin/pixwins_aa.pdf gain/gain_toy1d_bias_aa.pdf gain/gain_toy2d_noise_aa.pdf gain/gain_toy2d_bias_aa.pdf
+
 ps_files := $(wildcard subpix/toy2d*ps.txt)
 
 main.pdf: main.tex refs.bib $(figs) FORCE
 	pdflatex -interaction=batchmode main.tex && bibtex main && pdflatex -interaction=batchmode main.tex && pdflatex -interaction=batchmode main.tex
 	#pdflatex main.tex
 
-main_aa.pdf: main_aa.tex refs.bib $(figs) FORCE
+main_aa.pdf: main_aa.tex refs.bib $(figs_aa) FORCE
 	pdflatex -interaction=batchmode main_aa.tex && bibtex main_aa && pdflatex -interaction=batchmode main_aa.tex && pdflatex -interaction=batchmode main_aa.tex
 
 figs: $(figs)

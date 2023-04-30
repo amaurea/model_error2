@@ -56,7 +56,7 @@
 
 \begin{document}
 
-\title{Large-scale power loss in ground-based CMB mapmaking}
+\title{Large-scale power loss in ground-based CMB mapmaking\thanks{The source code and data files behind these examples is available at \url{https://github.com/amaurea/model_error2}. The 1D and 2D subpixel simulations are available in \texttt{subpix/model\_error\_toy.py} and \texttt{subpix/model\_error\_toy.py} respectively, while the gain error example is in \texttt{gain/gain\_model\_error\_toy\_2d.py}.}}
 
 \author{Sigurd~Naess\inst{1}\thanks{ORCID 0000-0002-4478-7111}
 \and Thibaut~Louis\inst{2}\thanks{ORCID 0000-0002-6849-4217}}
@@ -89,7 +89,7 @@ the general case.}
 		Input signal & Maximum likelihood solution \\
 		\includegraphics[width=40mm]{subpix/toy2d_input_signal_map.png} &
 		\includegraphics[width=40mm]{subpix/toy2d_ml_nn_signal_map.png} \\
-		%\includegraphics[width=\columnwidth]{subpix/model_error_toy_2d.pdf}
+		%\includegraphics[width=\columnwidth]{subpix/model_error_toy_2d_aa.pdf}
 	\end{tabular}
 	\end{closetabcols}
 	\caption{Preview of the model error bias we will discuss in the following
@@ -102,7 +102,7 @@ the general case.}
 	\label{fig:maps-2d}
 \end{figure}
 
-CMB telescopes observe the sky by scanning their detectors across
+Cosmic microwave bacgrkound (CMB) telescopes observe the sky by scanning their detectors across
 it while continuously reading off a series of samples from the
 detectors. Typically the signal-to-noise ratio of each sample is
 small, but by combining a large number of samples with knowledge
@@ -188,7 +188,7 @@ discontinuous jumps (the blue curve in the figure).
 
 \begin{figure}
 	\centering
-	\hspace*{-2mm}\includegraphics[width=1.05\columnwidth]{subpix/ps.pdf}
+	\hspace*{-2mm}\includegraphics[width=1.05\columnwidth]{subpix/ps_aa.pdf}
 	\caption{
 		The noise model/inverse weights/inverse filter used in the subpixel
 		bias demonstration in figures~\ref{fig:subpix-bias} and \ref{fig:subpix-noerr}.
@@ -374,7 +374,7 @@ map_ds = np.linalg.solve(P.T.dot(P), P.T.dot(signal - a))
 \subsubsection{Results}
 \begin{figure}
 	\centering
-	\hspace*{-5mm}\includegraphics[width=1.07\columnwidth]{subpix/model_error_toy.pdf}
+	\hspace*{-5mm}\includegraphics[width=1.07\columnwidth]{subpix/model_error_toy_aa.pdf}
 	\caption{
 		Demonstration of large loss of power in long-wavelength mode
 		caused by the poor subpixel treatment in the standard nearest-neighbor pointing matrix.
@@ -449,7 +449,7 @@ the residual smoother.
 
 \begin{figure}
 	\centering
-	\hspace*{-5mm}\includegraphics[width=1.07\columnwidth]{subpix/model_error_toy_noerr.pdf}
+	\hspace*{-5mm}\includegraphics[width=1.07\columnwidth]{subpix/model_error_toy_noerr_aa.pdf}
 	\caption{
 		Like figure~\ref{fig:subpix-bias}, but with the input signal
 		having the same nearest-neighbor pixelization as the models.
@@ -583,7 +583,7 @@ P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+
 
 \begin{figure}
 	\centering
-	\hspace*{-5mm}\includegraphics[width=1.10\columnwidth]{subpix/model_error_toy_2d.pdf}
+	\hspace*{-5mm}\includegraphics[width=1.10\columnwidth]{subpix/model_error_toy_2d_aa.pdf}
 	\caption{
 		Comparison of the subpixel bias of different mapmaking methods
 		described in section~\ref{sec:2d-cases} and discussed in section~\ref{sec:2d-results}.
@@ -600,7 +600,7 @@ P_nn   = scipy.sparse.csr_array((np.full(N_samp,1),(np.arange(N_samp),iy*N_side+
 
 \begin{figure}[h!]
 	\centering
-	\hspace*{-5mm}\includegraphics[width=1.10\columnwidth]{subpix/model_error_toy_2d_noise.pdf}
+	\hspace*{-5mm}\includegraphics[width=1.10\columnwidth]{subpix/model_error_toy_2d_noise_aa.pdf}
 	\caption{
 		Comparison of the optimality for the methods defined in section~\ref{sec:2d-cases}, measured
 		as the debiased noise power spectrum (using the bias measurements from figure~\ref{fig:2d-bias})
@@ -706,7 +706,7 @@ figure~\ref{fig:linwin1d}.
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\columnwidth]{subpix/tfun_lin_1d.pdf}
+	\includegraphics[width=\columnwidth]{subpix/tfun_lin_1d_aa.pdf}
 	\caption{Comparison of the 1D pixel window for nearest neighbor
 	mapmaking (red, $\text{sinc}(l)$) and linear mapmaking (blue). The 2D pixel window
 	is the outer product of the 1D one along each axis. The pixel
@@ -845,7 +845,7 @@ might see in a band with relatively high atmospheric noise. Even a quite moderat
 gain jitter of 10\% results in a serious loss of power for $\ell < 2000$.
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=8cm]{gain/gain_toy1d_bias.pdf}
+	\includegraphics[width=8cm]{gain/gain_toy1d_bias_aa.pdf}
 	\caption{Power loss for a 1D toy example with noise properties similar to
 	a ground-based CMB telescope with somewhat bad weather ($\ell_\text{knee}=3000$)
 	and a gain jitter of 0.1. Note: Since we plot power and not signal, this is the
@@ -904,7 +904,7 @@ this demonstration.
 We solve for binned, maximum-likelihood and filter+bin
 maps using a data model that is unaware of the gain errors (as one would be in reality,
 or they wouldn't be gain errors). This is implemented in the program \verb|gain_mode_error_2d_toy.py|
-(see section~\ref{sec:code}).
+(see title footnote).
 
 As expected from the 1D toy example, the gain inconsistency results
 in a large loss of power on large scales, as shown in figure~\ref{fig:gain-tf-2d}.
@@ -917,7 +917,7 @@ mapmaking the equivalent to reducing the correlations in the noise model would b
 to filter less.}
 \begin{figure}
 	\centering
-	\includegraphics[width=8.5cm]{gain/gain_toy2d_bias.pdf}
+	\includegraphics[width=8.5cm]{gain/gain_toy2d_bias_aa.pdf}
 	\caption{Power loss for a 2D toy example with multiple detectors
 	with inconsistent but constant gain errors. Plain unweighted binning
 	(red) is unbiased, but both maximum-likelihood (blue) and filter+bin
@@ -929,7 +929,7 @@ to filter less.}
 \end{figure}
 \begin{figure}
 	\centering
-	\includegraphics[width=8.5cm]{gain/gain_toy2d_noise.pdf}
+	\includegraphics[width=8.5cm]{gain/gain_toy2d_noise_aa.pdf}
 	\caption{How noisy different mapmaking methods are compared to maximum-likelihood
 	for the 2D gain error toy example. Each graph is the ratio of the transfer-function-deconvolved
 	noise spectrum for binned mapmaking (red), whitened maximum-likelihood (light blue)
@@ -1034,14 +1034,6 @@ surveys cut $\ell \lesssim 500-1000$ it is tempting to speculate that model erro
 bias may have caused null tests to fail at low $\ell$ without being
 identified as the culprit.
 
-\section{Source code}
-\label{sec:code}
-The source code and data files behind these examples is available at
-\url{https://github.com/amaurea/model_error2}. The 1D and 2D subpixel
-simulations are available in \verb|subpix/model_error_toy.py| and \verb|subpix/model_error_toy.py|
-respectively, while the gain error example is in
-\verb|gain/gain_model_error_toy_2d.py|.
-
 \section{Conclusion}
 
 \begin{enumerate}
@@ -1067,6 +1059,12 @@ respectively, while the gain error example is in
 		and checking if this leads to consistent power spectra.
 \end{enumerate}
 
+While it's unclear how large a role model-error bias has played in ground-based CMB results published
+so far, it will be an increasingly important effect as sensitivity increases. We hope upcoming
+projects like Simons Observatory and CMB-S4 will be on the lookout for large-scale power loss in
+total intensity, and to be aware that simulations alone cannot prove that their analysis pipeline
+is bias free.
+
 \begin{acknowledgements}
 We would like to thank Jon Sievers for first making us aware
 that subpixel errors weren't just limited to X'es around point
@@ -1091,7 +1089,7 @@ we define the linear interpolation value $d$ at some pixel coordinate $i+x$ wher
 This is illustrated in figure~\ref{fig:linear-defs}.
 \begin{figure}[h]
 	\center
-	\includegraphics[width=5cm]{pixwin/linear_defs.pdf}
+	\includegraphics[width=5cm]{pixwin/linear_defs_aa.pdf}
 	\caption{Definition of the quantities involved in linear interpolation.
 	Given values $\{v_i\}$ sampled at locations $\{i\}$, we define the linear interpolation
 	value $d$ at some location $i+x$ where $x\in[0,1)$ as $d = (1-x)v_i + x v_{i+1}$.}
@@ -1115,7 +1113,7 @@ scanning speed and infinite sample rate. This results in the pointing matrix $P$
 shown in figure~\ref{fig:linear-p}.
 \begin{figure*}[htb]
 	\center
-	\includegraphics[width=12cm]{pixwin/linear_p.pdf}
+	\includegraphics[width=12cm]{pixwin/linear_p_aa.pdf}
 	\caption{Structure of a linear-interpolation pointing matrix $P$ and its transpose $P^T$
 	for the case of a set of samples making a single scan across a row of pixels in 1D, assuming
 	wrapping boundary conditions. $x \in [0,1)$ is the subpixel coordinate of each sample.}
@@ -1193,7 +1191,7 @@ to around 0.6 at the Nyquiest frequency, $W_\text{lin}$ rises to about 1.4 at $f
 starts falling.
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=8cm]{pixwin/pixwins.pdf}
+	\includegraphics[width=8cm]{pixwin/pixwins_aa.pdf}
 	\caption{Comparison of of the 1D pixel windows for nearest neighbor mapmaking ($W_\text{nn}$)
 	and linear mapmaking ($W_\text{nn}$), plotted up to the Nyquist frequency, which is $\frac12$ in
 	these units.}
