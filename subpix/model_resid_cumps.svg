@@ -7,7 +7,7 @@
 >
 
 <title>Gnuplot</title>
-<desc>Produced by GNUPLOT 5.4 patchlevel 4 </desc>
+<desc>Produced by GNUPLOT 5.4 patchlevel 8 </desc>
 
 <g id="gnuplot_canvas">
 
@@ -300,7 +300,7 @@
 		L525.72,282.57 L531.32,282.57 L536.86,284.04 L542.32,284.04 L547.73,285.12 L553.06,285.12 L558.34,285.12 L563.55,302.63
 		L568.71,302.63 L569.61,335.20  '/></g>
 	</g>
-	<g id="gnuplot_plot_4" ><title>gnuplot_plot_4</title>
+	<g id="gnuplot_plot_4"  fill="none"><title>gnuplot_plot_4</title>
 <g fill="none" color="black" stroke="currentColor" stroke-width="1.40" stroke-linecap="butt" stroke-linejoin="miter">
 	<path stroke='rgb(  0,   0, 255)' stroke-dasharray='5.6,2.8'  d='M96.80,165.86 L166.38,165.86 L195.20,166.71 L217.31,166.71 L235.96,166.71 L252.38,167.33 L267.23,167.33 L280.89,168.18
 		L293.60,168.18 L305.54,168.18 L316.83,179.61 L327.57,179.61 L337.83,191.21 L347.67,191.21 L357.14,191.21 L366.28,193.12
@@ -310,11 +310,11 @@
 		L536.86,237.61 L542.32,237.61 L547.73,238.58 L553.06,238.58 L558.34,238.58 L563.55,255.95 L568.71,255.95 L571.23,335.20
 		 '/></g>
 	</g>
-	<g id="gnuplot_plot_5" ><title>gnuplot_plot_5</title>
+	<g id="gnuplot_plot_5"  fill="none"><title>gnuplot_plot_5</title>
 <g fill="none" color="black" stroke="currentColor" stroke-width="1.40" stroke-linecap="butt" stroke-linejoin="miter">
 	<path stroke='rgb(255, 192,   0)' stroke-dasharray='5.6,2.8'  d='M96.80,79.95 L166.38,79.95 L170.47,335.20  '/></g>
 	</g>
-	<g id="gnuplot_plot_6" ><title>gnuplot_plot_6</title>
+	<g id="gnuplot_plot_6"  fill="none"><title>gnuplot_plot_6</title>
 <g fill="none" color="black" stroke="currentColor" stroke-width="1.40" stroke-linecap="butt" stroke-linejoin="miter">
 	<path stroke='rgb(255,   0, 255)' stroke-dasharray='5.6,2.8'  d='M96.80,104.06 L166.38,104.06 L195.20,213.21 L217.31,213.21 L235.96,213.21 L252.38,214.02 L267.23,214.02 L280.89,214.74
 		L293.60,214.74 L305.54,214.74 L316.83,226.04 L327.57,226.04 L337.83,237.75 L347.67,237.75 L357.14,237.75 L366.28,239.80

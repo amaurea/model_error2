@@ -171,11 +171,14 @@ deficit at large scales, as illustrated in figure~\ref{fig:maps-2d}.
 \end{figure*}
 Subpixel errors may be both the most common and most important
 class of model errors in CMB mapmaking.
-For efficiency reasons $P$ is always\footnote{We are not aware of any
-published CMB analysis that has done something else. This includes
-destripers like MADAM \citep{madam/2010} and SRoll \citep{planck/hfi/maps/2020},
-filter+bin map-makers like those used in SPT \citep{spt/maps/2011,spt/2021} and BICEP
-\citep{bicep2a/2014} or the maximum likelihood map-makers used in ACT \citep{aiola/2020}
+For efficiency reasons $P$ is almost always\footnote{
+	While methods with non-discontinuous pointing matrices exist, e.g.
+	\citet{artdeco}, these have had very limited adoption. As far as we
+	are aware, every CMB telescope project has used nearest neighbor
+	mapmaking for their official maps. This includes destripers like MADAM
+	\citep{madam/2010} and SRoll \citep{planck/hfi/maps/2020} used in Planck,
+the filter+bin map-makers used in SPT \citep{spt/maps/2011,spt/2021} and BICEP
+\citep{bicep2a/2014} and the maximum likelihood map-makers used in ACT \citep{aiola/2020}
 and QUIET \citep{quiet-gal/2015}.
 }
 chosen to use simple nearest-neighbor interpolation, where the
@@ -273,6 +276,9 @@ in each pixel, with no weighting:
 map_binned = np.linalg.solve((P.T.dot(P)), P.T.dot(signal))
 \end{lstlisting}
 This is the unweighted least-squares solution for the map.
+With a nearest neighbor pointing matrix where each sample
+only affects one pixel $P^TP$ is diagonal, making solving
+for the binned map very fast.
 
 \subsubsection{Maximum-likelihood}
 The maximum-likelihood solution of equation~\ref{eq:model} for the
@@ -281,7 +287,11 @@ sky image $m$ is
 	\hat m = (P^TN^{-1}P)^{-1}P^TN^{-1}d
 \end{align}
 where $N$ is the covariance matrix of the noise $n$. This is the
-generalized least-squares solution for the map.\footnote{
+generalized least-squares solution for the map. Unliked binned
+mapmaking, the matrix $P ^TN^{-1}P$ except for the special case
+of uncorrelated noise. Solving for the maximum-likelihood map
+can therefore be hundreds of times slower, and requires
+iterative methods for large maps.\footnote{
 	The matrix $P^TN^{-1}P$ is often poorly conditioned, making it slow
 	for iterative solution methods to recover the large scales. If iteration is
 	stopped early, this could result in a lack of power at large scales.
@@ -364,8 +374,11 @@ maximum-likelihood solutions for $a$ and $m$ are
 	m &= (P^TN_w^{-1}P)^{-1}P^TN_w^{-1}(d - Qa) \label{eq:destripe}
 \end{align}
 where $C_a$ is one's prior knowledge of the covariance of $a$.
-Destriping allows a speed/optimality tradeoff in the choice of
-baseline length and prior, and approaches the maximum likelihood
+Similarly to binned and filter+bin mapmaking, destriping derives its speed
+from the diagonality of $P^TN_w^{-1}P$ allowing for instant inversion.
+On the other hand, the equation for the baseline amplitudes $a$ is
+not diagonal, and destriping allows a speed/optimality tradeoff in the choice of
+baseline length and prior. It approaches the maximum likelihood
 map when the baseline length is a single sample and $C_a + N_w = N$.
 We implement this limit below, but explore other choices in section~\ref{sec:toy-2d}.
 In our toy example $N_w = I$, so $C_a = F^{-1}-I$.
@@ -728,6 +741,13 @@ this cost is worth it, with bilinear maximum-likelihood mapmaking being bias-fre
 and even lower noise than standard ML. The bias is also greatly reduced for
 destriping, but not eliminated.
 
+Note that bilinear mapmaking (and in general any mapmaking method where each sample
+affects multiple pixels) breaks the diagonality of $P^TP$ which methods like binning,
+filter+bin and destriping rely on for their speed. While we have implemented bilinear
+variants of them here in order to investigate the effect on the bias, bilinear filter+bin
+and bilinear destriping are too slow to be useful in practice. This is in contrast to
+bilinear maximum-likelihood mapmaking, which only becomes a few times slower.
+
 \section{Gain errors}
 Surprisingly, gain errors can also lead to a scale-dependent power loss.
 This happens when scales with high, correlated noise are observed with
@@ -985,6 +1005,9 @@ the following tests for large-scale model error bias:
 		detectors. The latter should result in less a biased but noisier map, as we saw
 		in figures~\ref{fig:2d-bias} and \ref{fig:2d-noise}.
 		If the maps are consistent, then large-scale model error bias is probably not an issue.
+		Alternatively, one can check for consistency when varying the pixel size. We haven't
+		tested the effectiveness of this method, but model error bias should be proportional
+		to the pixel size with nearest neighbor mapmaking.
 \end{enumerate}
 
 \section{Who is at risk?}
@@ -1071,6 +1094,12 @@ respectively, while the gain error example is in
 		(much) lower dynamic range noise model/filter}\footnote{Or much longer baselines for destriping}
 		and checking if this leads to consistent power spectra.
 \end{enumerate}
+
+While it's unclear how large a role model-error bias has played in ground-based CMB results published
+so far, it will be an increasingly important effect as sensitivity increases. We hope upcoming
+projects like Simons Observatory and CMB-S4 will be on the lookout for large-scale power loss in
+total intensity, and to be aware that simulations alone cannot prove that their analysis pipeline
+is bias free.
 
 \section*{Acknowledgements}
 We would like to thank Jon Sievers for first making us aware

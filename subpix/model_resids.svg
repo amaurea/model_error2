@@ -7,7 +7,7 @@
 >
 
 <title>Gnuplot</title>
-<desc>Produced by GNUPLOT 5.4 patchlevel 4 </desc>
+<desc>Produced by GNUPLOT 5.4 patchlevel 8 </desc>
 
 <g id="gnuplot_canvas">
 
@@ -405,7 +405,7 @@
 		L588.22,223.36 L593.80,223.36 L599.38,223.36 L604.97,223.36 L610.55,223.36 L616.13,223.36 L621.72,223.36 L627.30,223.36
 		L632.89,223.36 L638.47,190.10 L644.05,190.10 L649.64,190.10 L655.22,190.10 L660.81,190.10  '/></g>
 	</g>
-	<g id="gnuplot_plot_5" ><title>gnuplot_plot_5</title>
+	<g id="gnuplot_plot_5"  fill="none"><title>gnuplot_plot_5</title>
 <g fill="none" color="black" stroke="currentColor" stroke-width="2.10" stroke-linecap="butt" stroke-linejoin="miter">
 	<path stroke='rgb(  0,   0, 255)' stroke-dasharray='16.8,4.2'  d='M108.00,190.10 L113.58,180.99 L119.17,171.92 L124.75,162.92 L130.34,154.02 L135.92,145.27 L141.50,220.86 L147.09,212.49
 		L152.67,204.37 L158.26,196.53 L163.84,188.99 L169.42,181.78 L175.01,174.95 L180.59,168.50 L186.17,162.47 L191.76,208.01
@@ -421,7 +421,7 @@
 		L599.38,205.26 L604.97,198.43 L610.55,191.22 L616.13,183.68 L621.72,175.84 L627.30,167.72 L632.89,159.35 L638.47,234.94
 		L644.05,226.19 L649.64,217.29 L655.22,208.29 L660.81,199.22  '/></g>
 	</g>
-	<g id="gnuplot_plot_6" ><title>gnuplot_plot_6</title>
+	<g id="gnuplot_plot_6"  fill="none"><title>gnuplot_plot_6</title>
 <g fill="none" color="black" stroke="currentColor" stroke-width="2.10" stroke-linecap="butt" stroke-linejoin="miter">
 	<path stroke='rgb(255, 192,   0)' stroke-dasharray='16.8,4.2'  d='M108.00,190.10 L113.58,180.99 L119.17,171.92 L124.75,162.92 L130.34,154.02 L135.92,145.27 L141.50,136.69 L147.09,128.33
 		L152.67,120.20 L158.26,112.36 L163.84,104.82 L169.42,97.62 L175.01,90.78 L180.59,84.34 L186.17,78.31 L191.76,72.72
@@ -437,7 +437,7 @@
 		L599.38,289.43 L604.97,282.59 L610.55,275.39 L616.13,267.85 L621.72,260.01 L627.30,251.88 L632.89,243.52 L638.47,234.94
 		L644.05,226.19 L649.64,217.29 L655.22,208.29 L660.81,199.22  '/></g>
 	</g>
-	<g id="gnuplot_plot_7" ><title>gnuplot_plot_7</title>
+	<g id="gnuplot_plot_7"  fill="none"><title>gnuplot_plot_7</title>
 <g fill="none" color="black" stroke="currentColor" stroke-width="2.10" stroke-linecap="butt" stroke-linejoin="miter">
 	<path stroke='rgb(255,   0, 255)' stroke-dasharray='16.8,4.2'  d='M108.00,190.11 L113.58,180.99 L119.17,171.92 L124.75,162.92 L130.34,154.02 L135.92,145.27 L141.50,169.95 L147.09,161.58
 		L152.67,153.46 L158.26,145.62 L163.84,138.08 L169.42,130.88 L175.01,124.04 L180.59,117.59 L186.17,111.56 L191.76,126.73

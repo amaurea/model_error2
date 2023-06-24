@@ -7,7 +7,7 @@
 >
 
 <title>Gnuplot</title>
-<desc>Produced by GNUPLOT 5.4 patchlevel 4 </desc>
+<desc>Produced by GNUPLOT 5.4 patchlevel 8 </desc>
 
 <g id="gnuplot_canvas">
 
@@ -465,7 +465,7 @@
 		L465.02,121.13 L474.16,121.13 L483.74,121.01 L493.49,118.61 L503.36,118.08 L513.10,112.80 L522.48,111.62 L531.94,104.10
 		L541.51,97.65 L551.19,84.45 L553.65,78.01  '/></g>
 	</g>
-	<g id="gnuplot_plot_16" ><title>gnuplot_plot_16</title>
+	<g id="gnuplot_plot_16"  fill="none"><title>gnuplot_plot_16</title>
 <g fill="none" color="black" stroke="currentColor" stroke-width="2.00" stroke-linecap="butt" stroke-linejoin="miter">
 </g>
 	</g>

@@ -23,7 +23,7 @@ def fourier_extract(fimap, oshape):
 	return fomap
 
 npix  = 1000
-nsamp = 4*npix
+nsamp = 100*npix
 #npix  =  40
 #nsamp = 160
 
@@ -34,8 +34,8 @@ rx        = pix-pix_left
 ix1       = pix_left % npix
 ix2       = (pix_left+1)% npix
 P         = np.zeros([nsamp,npix])
-P         [np.arange(nsamp),ix1] += 1-rx
-P         [np.arange(nsamp),ix2] += rx
+P[np.arange(nsamp),ix1] += 1-rx
+P[np.arange(nsamp),ix2] += rx
 
 # fSignal:   d = F"a
 # Response:  m = (P'P)"P'd
@@ -48,7 +48,7 @@ R  = F.dot(np.linalg.inv(P.T.dot(P)).dot(P.T.dot(iF))).real
 # it's a simple transfer function
 tfun = np.diag(R)
 freq = np.fft.rfftfreq(npix)
-np.savetxt("tfun_lin_1d.txt", np.array([freq,tfun]).T, fmt="%15.7e")
+np.savetxt("tfun_lin_1d_dense.txt", np.array([freq,tfun]).T[:-1], fmt="%15.7e")
 del iF, F, R, P
 
 # The stuff below is just a test of the separability of 2d linint.

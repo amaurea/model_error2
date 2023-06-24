@@ -52,3 +52,5 @@ clean:
 	rm -f main.aux main.bbl main.blg main.log main.out
 cleanall: clean
 	rm -f {subpix,common_mode,nearest_neigh}/*.{txt,svg,pdf} .{subpix,common}_{run,plot}
+cleanimg: clean
+	rm -f {subpix,common_mode,nearest_neigh}/*.{svg,pdf} .{subpix,common}_{run,plot}
