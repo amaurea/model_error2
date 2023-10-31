@@ -1,4 +1,4 @@
-\documentclass[twocolumn,apj]{aastex63}
+\documentclass[twocolumn]{openjournal}
 \pdfoutput=1
 \usepackage{amsmath,amssymb,gensymb,color,graphicx,array,multirow,soul,rotating}
 \usepackage{natbib,multirow,placeins,textcomp,subfigure}
@@ -9,6 +9,7 @@
 %\usepackage{threeparttable}
 \usepackage{booktabs}
 \usepackage{microtype}
+\usepackage{orcidlink}
 %\usepackage{bm}
 \usepackage{listings}
 \usepackage{hyperref}
@@ -60,9 +61,9 @@
 %\title{impact of sub-pixel errors on the recovery of large angular scales in CMB mapmaking}
 \title{Large-scale power loss in ground-based CMB mapmaking}
 
-\author[0000-0002-4478-7111]{Sigurd~Naess}
+\author{Sigurd~Naess \orcidlink{0000-0002-4478-7111}}
 \affil{Institute of Theoretical Astrophysics, University of Oslo, Norway}
-\author[0000-0002-6849-4217]{Thibaut~Louis}
+\author{Thibaut~Louis \orcidlink{0000-0002-6849-4217}}
 \affil{Université Paris-Saclay, CNRS/IN2P3, IJCLab, 91405 Orsay, France}
 
 \keywords{}
@@ -85,6 +86,25 @@ the general case.
 
 \section{Introduction}
 
+CMB telescopes observe the sky by scanning their detectors across
+it while continuously reading off a series of samples from the
+detectors. Typically the signal-to-noise ratio of each sample is
+small, but by combining a large number of samples with knowledge
+of which direction the telescope was pointing at any time, it's
+possible to reconstruct an image of the sky. There are several
+ways of doing this, with the most common being maximum-likelihood,
+filter+bin and destriping. These all start by modeling the
+telescope data as \citep{tegmark-mapmaking}
+\begin{align}
+	d = Pm + n \label{eq:model}
+\end{align}
+where $d$ is the set of samples read off from the detectors
+(often called the time-ordered data), $m$ is the set of pixels
+of the sky image we want to reconstruct, $n$ is the noise
+in each sample (usually with significant correlations), and
+$P$ is a pointing matrix that encodes how each sample responds
+to the pixels in the image.
+
 \begin{figure}
 	\centering
 	\begin{closetabcols}
@@ -104,25 +124,6 @@ the general case.
 	several subtle types of model error.}
 	\label{fig:maps-2d}
 \end{figure}
-
-CMB telescopes observe the sky by scanning their detectors across
-it while continuously reading off a series of samples from the
-detectors. Typically the signal-to-noise ratio of each sample is
-small, but by combining a large number of samples with knowledge
-of which direction the telescope was pointing at any time, it's
-possible to reconstruct an image of the sky. There are several
-ways of doing this, with the most common being maximum-likelihood,
-filter+bin and destriping. These all start by modeling the
-telescope data as \citep{tegmark-mapmaking}
-\begin{align}
-	d = Pm + n \label{eq:model}
-\end{align}
-where $d$ is the set of samples read off from the detectors
-(often called the time-ordered data), $m$ is the set of pixels
-of the sky image we want to reconstruct, $n$ is the noise
-in each sample (usually with significant correlations), and
-$P$ is a pointing matrix that encodes how each sample responds
-to the pixels in the image.
 
 Given this data model, it's possible to either directly solve for
 an unbiased map (as in maximum likelihood mapmaking or destriping),
@@ -750,161 +751,118 @@ bilinear maximum-likelihood mapmaking, which only becomes a few times slower.
 
 \section{Gain errors}
 Surprisingly, gain errors can also lead to a scale-dependent power loss.
-This happens when scales with high, correlated noise are observed with
-inconsistent gain on length-scales comparable to or shorter than the
-correlation length. We will illustrate this using a minimal 1D toy example
-with a single detector with rapidly fluctuating gain, as well as a more
-realistic 2D example with multiple detectors each with their own static
-gain error.
+This happens when the noise model correlates observations with inconsistent
+gain, for example multipe miscalibrated detectors with correlated noise.
+We will illustrate this using a minimal 1D toy example
+with two correlated detectors, as well as a more realistic 2D example.
 
 \subsection{1D toy example}
-Consider a single detector scanning across a line of pixels, measuring them
-once each in the presence of correlated noise. We can model this as
+Consider two miscalibrated detectors scanning across a line of pixels. Both detectors
+point in the same direction, and take one sample per pixel. We can model
+this as
 \begin{align}
-	d &= m + n
+	d &= G(Pm + n) = GPm + Gn & \text{(actual)} \label{eq:gain-toy1d}
 \end{align}
 where $d$ is the vector of samples, $m$ is the true signal in the pixels,
-$n$ is Gaussian noise with covariance $N$, which we model as diagonal in Fourier
-space (so fully described by a power spectrum).
+$n$ is Gaussian noise with covariance $N$, $P$ is the pointing matrix
+and $G$ is the gain error. Written out in terms of detectors and samples,
+we can express this as
 \begin{align}
-	\widetilde{N}_{ff'} &= \delta_{ff'} \widetilde{N}_f
+	d_{di} &= G_d P_d m_i + G_d n_{di}
 \end{align}
-where $f$ and $f'$ are Fourier indices and a tilde indicates a Fourier-space quantity.
-The maximum-likelihood estimator for $m$ is trivial
+with $d$ and $i$ being the detector and sample index respectively,
+$P_d = [1, 1]_d = 1$ and $G_d = [g_1,g_2]_d$. This simply expresses
+that both detectors see the same signal at the
+same time. Let us assume that the noise covariance is diagonal in Fourier
+space
 \begin{align}
-	\hat m &= (N^{-1})^{-1} N^{-1} d = d
+	N_{d_1d_2ff'} &= A_f C_{fd_1d_2} \delta_{ff'} \\
+	C_{fd_1d_2} &= \begin{bmatrix}
+	1 & \alpha_f \\
+	\alpha_f & 1 \end{bmatrix}
 \end{align}
-which has expectation value $m$ and hence is unbiased.
-Let us now consider the effect of gain errors. To do this we must distinguish between
-the \emph{actual} behavior of the data, and our \emph{model} for the behavior of the data.
-We can represent gain errors acting on the data using a matrix $G$ such that
+where $f$ and $f'$ are frequency indices, and $A_f$ is the noise power spectrum.
+This gives us the inverse noise model
 \begin{align}
-	d &= G(m+n) = Gm + Gn & \text{(actual)} \label{eq:gain-true}
+	N_{d_1d_2ff'}^{-1} &= A_f^{-1} C_{fd_1d_2}^{-1} \delta_{ff'} \label{eq:gain-toy1d-ninv}\\
+	C_{fd_1d_2}^{-1} &= (1-\alpha_f^2)^{-1}\begin{bmatrix}
+	1 & -\alpha_f \\
+	-\alpha_f & 1 \end{bmatrix}
 \end{align}
-However, given that these are gain \emph{errors}, we presumably aren't aware of them,
-and so our data model will instead be
+The maximum-likelihood solution of equation~\ref{eq:gain-toy1d} is
 \begin{align}
-	d &= m + G n & \text{(model)} \label{eq:gain-model}
+	\hat m &= (P^TGG^{-1}N^{-1}G^{-1}GP)^{-1}P^TGG^{-1}N^{-1}G^{-1}d \notag \\
+	&= (P^TN^{-1}P)^{-1}P^TN^{-1}P^{-1}N^{-1}(Pm + n) \notag \\
+	&= Pm+n
+\end{align}
+which has expectation value $\langle \hat m \rangle = m$, which is unbiased.
+However, given that $G$ is supposed to be a gain \emph{error}, we are presumably
+not aware of it, and so our data model will instead be
+\begin{align}
+	d &= Pm + Gn & \text{(model)}
 \end{align}
 The reason why $G$ is still present in front of $n$ in the model is that the noise properties
 are almost always measured from the data, so our noise model would automatically absorb $G$.
-Given this model, the maximum-likelihood solution for $m$ is
+Given this model, our maximum-likelihood solution for $m$ is
 \begin{align}
-	\hat m &= (G^{-1}N^{-1}G^{-1})^{-1}G^{-1}N^{-1}G^{-1}d \label{eq:gain-ml}
+	\hat m &= (P^TG^{-1}N^{-1}G^{-1}P)^{-1}P^TG^{-1}N^{-1}G^{-1}d
 \end{align}
-This will be unbiased as long as the data actually follows equation~\ref{eq:gain-model}.
-But if we insert the actual behavior of $d$ from equation~\ref{eq:gain-true}, we end up with
+Inserting the actual data behavior from equation~\ref{eq:gain-toy-1d}, we get
 \begin{align}
-\hat m &= (G^{-1}N^{-1}G^{-1})^{-1}G^{-1}N^{-1}G^{-1}Gm + \text{noise}\notag \\
-	&= \Big[\underbrace{G^{-1}N^{-1}G^{-1}}_A\Big]^{-1}\underbrace{G^{-1}N^{-1} m}_b + \text{noise} \label{eq:gaincancel}
+	\langle\hat m\rangle &= (P^TG^{-1}N^{-1}G^{-1}P)^{-1}P^TG^{-1}N^{-1}G^{-1}Gm \notag \\
+	&= (P^TG^{-1}N^{-1}G^{-1}P)^{-1}P^TG^{-1}N^{-1}m
 \end{align}
-Notice that two of the $G$'s in the numerator cancelled. As we shall see, this is
-the ultimate cause of the power loss.
+Since $N$ is diagonal in Fourier space and both $G$ and $P$ are constant in time,
+the whole equation becomes Fourier-diagonal
+\begin{align}
+	\langle\hat m_f\rangle &= (P^TG^{-1}N_f^{-1}G^{-1}P)^{-1}P^TG^{-1}N_f^{-1}m_f
+\end{align}
+Inserting eq.~\ref{eq:gain-toy1d-ninv}, this simplifies to ($A_f$ cancels)
+\begin{align}
+	\langle\hat m_f\rangle &= \frac{g_1+g_2}{g_1^2+g_2^2} \frac{1-\alpha_f}{1-\frac{2g_1g_2}{g_1^2+g_2^2}\alpha_f} m_f
+\end{align}
+So the effect of the gain miscalibration is an overall scaling of the result
+as one would expect, $(g_1+g_2)/(g_1^2+g_2^2)$, times a transfer function
+\begin{align}
+	\text{TF}(f) &= \frac{1-\alpha_f}{1-\frac{2g_1g_2}{g_1^2+g_2^2}\alpha_f}
+\end{align}
+This reduces to 1 both when the detectors are uncorrelated ($\alpha_f = 0$)
+and when there are no relative gain errors ($g_1=g_2$).
 
-To get further, we need to specify the behavior
-of $G$. We will model it as diagonal in pixel space, with each entry being random.
-It will be simplest to express this in terms of its inverse
+To motivate a frequency-dependent correlation coefficient, let's consider the
+common case of atmospheric 1/f-noise plus white instrumental noise. Our detectors
+are co-pointing, meaning they see the same atmosphere, so this nosie component is
+100\% correlated between detectors, but we assume their instrumental noise to be
+uncorrelated.
 \begin{align}
-G^{-1} &= I + \Delta, & \Delta_{\alpha\beta} &= \Delta_\alpha \delta_{\alpha\beta}, & \text{cov}(\Delta_\alpha,\Delta_\beta) = \sigma^2 \delta_{\alpha\beta}
+	N_f &= \begin{bmatrix}1 & 1 \\ 1 & 1\end{bmatrix} (f/f_\text{knee})^{-3} +
+		\begin{bmatrix}1 & 0 \\ 0 & 1\end{bmatrix} =
+			\begin{bmatrix}
+				1 & \alpha_f \\ \alpha_f & 1
+			\end{bmatrix} A_f \notag \\
+	\alpha_f &= A_f^{-1} \quad,\quad
+	A_f = 1 + (f/f_\text{knee})^{-3} \quad \Rightarrow \notag \\
+	\text{TF}(f) &= \frac{(f/f_\text{knee})^{-3}}{1-\frac{2g_1g_2}{g_1^2+g_2^2}(1+(f/f_\text{knee})^{-3})}
+	\label{eq:gain-tf-1d}
 \end{align}
-where $\alpha, \beta$ are pixel indices. So each entry in the diagonal of pixel-space $G^{-1}$
-has independent Gaussian noise with rms $\sigma$. Inserting this expression for $G^{-1}$ we get
-\begin{align}
-A &= (I+\Delta)N^{-1}(I+\Delta) \notag \\
-  &= N^{-1} + \Delta N^{-1} \Delta + \Delta N^{-1} + N^{-1} \Delta \\
-b &= (I+\Delta)N^{-1}m + \text{noise}\notag \\
-	&= N^{-1}m + \Delta N^{-1} m + \text{noise}
-\end{align}
-Let's see if we can simplify the terms with $\Delta$ in them. It's problematic to have a mix
-of pixel-space and Fourier-space quantities, so let's compute the Fourier-representation of
-$\Delta$: $\widetilde{\Delta} = F\Delta F^{-1}$.
-\begin{align}
-\widetilde{\Delta}_{f_1f_2} &= \frac{1}{N_s} \sum_{\alpha\beta} e^{\frac{-2\pi i \alpha f_1}{N_s}} e^{\frac{2\pi i \beta f_2}{N_s}} \Delta_{\alpha\beta} \notag \\
-&= \frac{1}{N_s} \sum_\alpha e^{\frac{2\pi i \alpha (f_2-f_1)}{N_s}} \Delta_\alpha
-\end{align}
-where $N_s$ is the number of samples (or equivalently pixels in this case, since we have one sample per pixel).
-Using this we can evaluate the terms that go into $\widetilde{A}$ and $\widetilde{b}$.
-\begin{align}
-&(\widetilde\Delta \widetilde{N}^{-1} \widetilde{\Delta})_{f_1f_2} \notag \\
-=&\frac{1}{N_s^2} \sum_{\alpha\beta} \sum_{ff'} e^{\frac{2\pi i \alpha (f-f_1)}{N_s}}
-e^{\frac{2\pi i \beta (f_2-f')}{N_s}} \Delta_\alpha \Delta_\beta \widetilde{N}^{-1}_{ff'} \notag \\
-	=& \frac{1}{N_s^2} \sum_f \widetilde{N}^{-1}_f \sum_{\alpha\beta} e^{\frac{2\pi i \alpha (f-f_1)}{N_s}}e^{\frac{2\pi i \beta (f_2-f)}{N_s}} \Delta_\alpha \Delta_\beta
-\end{align}
-In the limit $N_s \rightarrow \infty$, $1/N_s \sum_{\alpha\ne\beta} \Delta_\alpha\Delta_\beta \rightarrow 0$.
-The Fourier-prefactors don't change this, since their magnitude is at most 1. Hence, we must have $\alpha=\beta$ in this limit.
-\begin{align}
-(\widetilde\Delta \widetilde{N}^{-1} \widetilde{\Delta})_{f_1f_2} &\stackrel{\lim N_s\rightarrow\infty}{=}
-\frac{1}{N_s^2} \sum_f \widetilde{N}^{-1}_f \sum_\alpha e^{\frac{2\pi i \alpha (f_2-f_1)}{N_s}} \Delta_\alpha^2 \notag \\
-&\stackrel{\lim N_s\rightarrow\infty}{=}
-\frac{1}{N_s} \Big(\sum_f \widetilde{N}^{-1}_f\Big) \delta_{f_1f_2}\sigma^2 \notag \\
-&= \overline{\widetilde{N}^{-1}}\sigma^2 \delta_{f_1f_2}
-\end{align}
-where we have defined $\overline{\widetilde{N}^{-1}} = 1/N_s \sum_f \widetilde{N}^{-1}$,
-which is simply the average over the inverse noise power spectrum.
-The remaining $\Delta$ terms all have just a single power of $\Delta$. These all go to
-zero in the limit $N_s \rightarrow \infty$. For example
-\begin{align}
-(\widetilde\Delta \widetilde{N}^{-1})_{f_1f_2} &= \widetilde{N}^{-1}_{f_1} \delta_{f_1 f_2} \frac{1}{N_s} \sum_\alpha e^{\frac{2\pi i \alpha (f_2-f_1)}{N_s}} \Delta_\alpha \stackrel{\lim N_s\rightarrow\infty}{=} 0
-\end{align}
-So in the end, we are left with
-\begin{align}
-\widetilde{A}_f &= \widetilde{N}^{-1}_f + \overline{\widetilde{N}^{-1}} \sigma^2 \\
-\widetilde{b}_f &= \widetilde{N}^{-1}_f \widetilde{m}_f + \text{noise}
-\end{align}
-and thus
-\begin{align}
-\langle\widetilde{\hat{m}}\rangle &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}^{-1}} \sigma^2} \widetilde{m}
-\end{align}
-Hence, our transfer function is
-\begin{align}
-\text{TF}(f) &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + \overline{\widetilde{N}^{-1}} \sigma^2} \label{eq:gain-tf-1d}
-\end{align}
-The reason why the $\sigma^2$ term is only present in the denominator is that the
-$G$'s cancelled in equation~\ref{eq:gaincancel}. This happened because both the data and noise model
-were affected by the gain errors.
-Figure~\ref{fig:gain-tf-1d} shows what this looks like for a case with
-and $1/\ell$ noise spectrum with
-$\ell_\text{knee} = 3000$, $\alpha = -3.5$ and a gain jitter $\sigma = 0.1$.
-This noise spectrum is a rough approximation of what a large ground-based CMB telescope
-might see in a band with relatively high atmospheric noise. Even a quite moderate
-gain jitter of 10\% results in a serious loss of power for $\ell < 2000$.
+The result is a frequency-dependent correlation coefficient that changes smoothly
+from 100\% corrleated for atmosphere-dominated scales (low frequencies) to 0\% correlated
+for detector-noise dominated scales (high frequencies). The transfer function for this
+is plotted in figure~\ref{fig:gain-tf-1d} for the case of a 10\% gain error and
+average weather (tough note that this 1D example does not capture the benefits of
+crosslinking).
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=8cm]{gain/gain_toy1d_bias.pdf}
-	\caption{Power loss for a 1D toy example with noise properties similar to
-	a ground-based CMB telescope with somewhat bad weather ($\ell_\text{knee}=3000$)
-	and a gain jitter of 0.1. Note: Since we plot power and not signal, this is the
-	square of the transfer function itself. Unlike the other examples, the horizontal axis
-	uses an actual multipole instead of Nyquist units.}
+	\caption{Signal loss for a 1D toy example with noise properties similar to
+	a ground-based CMB telescope average weather (per-detector $\ell_\text{knee}=1000$)
+	and a 10\% gain error. The solid red curve is based on equation~\ref{eq:gain-tf-1d}.
+	The dashed blue curve is a simulation (\texttt{gain/gain\_model\_error\_toy\_1d\_sim.py}).
+	Unlike the other examples, the horizontal axis
+	uses multipoles instead of Nyquist units to make it easier to compare to
+	CMB observations.}
 	\label{fig:gain-tf-1d}
 \end{figure}
-
-In general we conjecture that if we allow $\Delta$ (the fluctuation of $G^{-1}$)
-to be correlated with covmat $S$ which is diagonal in Fourier space, then the TF should be
-\begin{align}
-\text{TF}(f) &= \frac{\widetilde{N}^{-1}(f)}{\widetilde{N}^{-1}(f) + (\widetilde{S} \ast \widetilde{N}^{-1})(f)}
-\end{align}
-Here $\ast$ means convolution. For uncorrelated $\Delta$, $\widetilde S(f) = \sigma^2$
-this reduces to the previous result.
-For super-correlated $\Delta$, $\widetilde S(f) \propto \delta(f)$, we get $\text{TF}(f) \propto 1$,
-so no transfer function, just an overall gain error. What this means is that gain fluctuations
-only cause a scale-dependent power loss if they happen on a time-scale that's not strongly
-downweighted by the noise model. Hence, gain inconsistency on timescales longer than about a
-second should not matter.
-
-\subsubsection{Reinterpretation as detector inconsistency}
-A detector with gain that fluctuates by $\mathcal{O}(10\%)$ on sub-second timescales may not be
-realistic, but we can reinterpret the time-series in the toy example above as being the interlaced
-samples from a set of $D$ detectors with highly correlated noise\footnote{
-In the toy model nearby samples have strongly correlated noise. Since nearby samples come from
-different detectors in this reinterpretation of the model, it follows that the detectors' noise
-must also be highly correlated.
-} that all point in the same direction, with detector 0 having
-samples $0,D,2D,\ldots$, detector 1 having samples $1,D+1,2D+1,\ldots$, etc.. In this case each detector
-can have a constant gain error, and the gain jitter $\sigma$ instead corresponds to the detectors'
-disagreement. Ultimately what matters is that there are multiple highly correlated observations
-that disagree on the amplitude of the signal, whether that be correlations and disagreement in
-time or correlations and disagreement between detectors, or both.
 
 \subsection{2D toy example}
 We have also demonstrated the effect of gain errors on a somewhat more realistic
@@ -971,6 +929,68 @@ error inconsistency are not unrealistic for a ground-based CMB telescope,
 so it is likely that many ground-based telescopes suffer from this bias to
 some extent.
 
+\subsection{Time-dependent gain errors are much less serious}
+So far we have only considered cases where detectors disagree on the gain,
+but gain errors can also be time-dependent. Can these also cause large-scale
+power loss? As we shall see the answer is ``yes, but only in unrealistic
+circumstances''.
+
+Consider a single detector that makes a series of passes over a line of pixels,
+such that
+
+\begin{align}
+	d_{ix} &= g_{ix} m_x + g_{ix} n_{ix} \quad,\quad \text{(actual)}
+\end{align}
+where $d_{ix}$ is the measurement in pixel/sample $x$ of pass $i$, $m_x$ is the
+true signal in pixel $x$, $g_{ix}$ is the unmodeled gain and $n_{ix}$ is the
+noise. We assume that the gain error is ignored in the data model but captured
+by the noise model:
+\begin{align}
+	d_{ix} &= m_x + g_{ix} n_{ix} \quad,\quad \text{(model)}
+\end{align}
+This has maximum-likelihood solution
+\begin{align}
+	\left(\sum_i g_{ix}^{-1} N_{xy}^{-1} g_{iy}^{-1}\right) \hat m_y &= \sum_i g_{ix}^{-1}N_{xy}^{-1} (m_y + n_{iy})
+\end{align}
+We further assume
+\begin{enumerate}
+	\item Both the noise and gain errors are independent between each pass
+	\item The inverse gain perturbation $\gamma_{ix} = g_{ix}^{-1} - 1$
+		has stationary covariance $\Gamma$, which is therefore diagonal
+		in Fourier space, with diagonal $\widetilde{\Gamma}$ (its power spectrum).
+	\item Similarly the covariance is Fourier-diagonal with power spectrum
+		$\widetilde{N}$
+\end{enumerate}
+Under these assumptions it can be shown that when the number of passes is much
+greater than one the Fourier transform of the maximum likelihood solution becomes
+\begin{align}
+	\hat{\widetilde{m}}_f &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + (\widetilde{\Gamma} \ast \widetilde{N}^{-1})_f} \widetilde{m}_f
+\end{align}
+where $\ast$ is the convolution operator. We see that in the limit of uncorrelated
+gain errors, $\widetilde{\Gamma}_f = \text{const}$, the bias becomes $1/(1+\text{const}\cdot\widetilde{N})$.
+For atmospheric noise this gives a strong suppression of the signal on large scales, just
+like we saw for detector errors. On the other limit where the gain error changes slowly
+and is approximately constant over a noise correlation length, we have $\widetilde{\Gamma} \approx \text{const}\cdot \delta \Rightarrow \widetilde{\Gamma} \ast \widetilde{N}^{-1} \approx \text{const} \cdot \widetilde{N}^{-1}$,
+and so the bias just becomes a constant scaling. So to get scale-dependent power loss,
+the gain error needs to vary on time-scales over which the noise is strongly correlated.
+
+However, all of this rests on the assumption that the gain errors are
+captured by the noise model. For the previous case of constant per-detector
+gain errors this is realistic - after all detectors typically don't all have the
+same noise level, so they need to be weighted differently, and the noise model
+ends up absorbing the gain error when being measured from the data itself.
+The situation is different
+from time-dependent gains. As we saw above, the noise model must be modulated
+by gain errors that change quickly relative to the atmosphere if we are to
+get scale-dependent bias, and for a typical ground-based CMB telescope this
+works out to be $\sim$ second time-scales. It is very uncommon to build noise models
+that track the noise properties with a time resolution this high.
+
+In contrast
+to detector-dependent gain errors, we therefore
+do not expect time-dependent gain errors to be a significant source for large-scale
+power loss.
+
 \section{Easily missed in simulations}
 What makes model error bias especially insidious is that
 it is completely invisible to any simulation that does not explicitly include
@@ -1013,7 +1033,7 @@ the following tests for large-scale model error bias:
 \section{Who is at risk?}
 While model error bias can be expected to always be present at a
 low level, it only becomes important when dealing with very large amounts
-of correlated noise (e.g. much more noise on some scales than others,
+of correlated noise (e.g. much more noise correlations on some scales than others,
 see equation~\ref{eq:gain-tf-1d}). Therefore, the telescopes at risk are
 those that fulfill the following criteria.
 \begin{enumerate}
