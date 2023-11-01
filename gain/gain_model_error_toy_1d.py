@@ -9,7 +9,8 @@ import numpy as np
 
 l     = 10**np.linspace(np.log10(1),np.log10(10000),100)
 Natm  = (l/args.lknee)**args.alpha
-corr  = Natm/(1+Natm)
+Ntot  = 1+Natm
+corr  = Natm/Ntot
 g1    = 1
 g2    = g1*(1+args.gainerr)
 tfun  = (1-corr)/(1-(2*g1*g2)/(g1**2+g2**2)*corr)

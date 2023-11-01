@@ -76,11 +76,12 @@ small-scale effects in high-contrast regions of the sky, but can manifest
 as $\mathcal{O}(1)$ power loss on large scales in the map under conditions
 and assumptions realistic for ground-based CMB telescopes. This bias is
 invisible to simulation-based tests that do not explicitly model them,
-making it easy to miss. We investigate the common cases of sub-pixel errors
-and gain errors in more detail and demonstrate that subpixel bias can
-be eliminated using bilinear pointing matrices. Finally, we provide simple
+making it easy to miss. We identify two different mechanisms that both
+cause suppression of long-wavelength modes: sub-pixel errors and detector
+gain calibration mismatch. We show that specific case of subpixel bias can
+be eliminated using bilinear pointing matrices, but also provide simple
 methods for testing for the presence of large-scale model error bias in
-the general case.
+general.
 \vspace*{8mm}
 \end{abstract}
 
@@ -803,11 +804,12 @@ not aware of it, and so our data model will instead be
 \end{align}
 The reason why $G$ is still present in front of $n$ in the model is that the noise properties
 are almost always measured from the data, so our noise model would automatically absorb $G$.
+For example, if a detector were to be calibrated too high, it would also appear noisier, and would therefore be downweighted more under inverse variance weigting.
 Given this model, our maximum-likelihood solution for $m$ is
 \begin{align}
 	\hat m &= (P^TG^{-1}N^{-1}G^{-1}P)^{-1}P^TG^{-1}N^{-1}G^{-1}d
 \end{align}
-Inserting the actual data behavior from equation~\ref{eq:gain-toy-1d}, we get
+Inserting the actual data behavior from equation~\ref{eq:gain-toy1d}, we get
 \begin{align}
 	\langle\hat m\rangle &= (P^TG^{-1}N^{-1}G^{-1}P)^{-1}P^TG^{-1}N^{-1}G^{-1}Gm \notag \\
 	&= (P^TG^{-1}N^{-1}G^{-1}P)^{-1}P^TG^{-1}N^{-1}m
@@ -840,9 +842,9 @@ uncorrelated.
 			\begin{bmatrix}
 				1 & \alpha_f \\ \alpha_f & 1
 			\end{bmatrix} A_f \notag \\
-	\alpha_f &= A_f^{-1} \quad,\quad
+	\alpha_f &= 1-A_f^{-1} \quad,\quad
 	A_f = 1 + (f/f_\text{knee})^{-3} \quad \Rightarrow \notag \\
-	\text{TF}(f) &= \frac{(f/f_\text{knee})^{-3}}{1-\frac{2g_1g_2}{g_1^2+g_2^2}(1+(f/f_\text{knee})^{-3})}
+	\text{TF}(f) &= \frac{A_f^{-1}}{1-\frac{2g_1g_2}{g_1^2+g_2^2}(1-A_f^{-1})}
 	\label{eq:gain-tf-1d}
 \end{align}
 The result is a frequency-dependent correlation coefficient that changes smoothly
@@ -930,6 +932,7 @@ so it is likely that many ground-based telescopes suffer from this bias to
 some extent.
 
 \subsection{Time-dependent gain errors are much less serious}
+\label{sec:toy-gain1d-time}
 So far we have only considered cases where detectors disagree on the gain,
 but gain errors can also be time-dependent. Can these also cause large-scale
 power loss? As we shall see the answer is ``yes, but only in unrealistic
@@ -939,14 +942,14 @@ Consider a single detector that makes a series of passes over a line of pixels,
 such that
 
 \begin{align}
-	d_{ix} &= g_{ix} m_x + g_{ix} n_{ix} \quad,\quad \text{(actual)}
+	d_{ix} &= g_{ix} m_x + g_{ix} n_{ix} \quad \text{(actual)}
 \end{align}
 where $d_{ix}$ is the measurement in pixel/sample $x$ of pass $i$, $m_x$ is the
 true signal in pixel $x$, $g_{ix}$ is the unmodeled gain and $n_{ix}$ is the
 noise. We assume that the gain error is ignored in the data model but captured
 by the noise model:
 \begin{align}
-	d_{ix} &= m_x + g_{ix} n_{ix} \quad,\quad \text{(model)}
+	d_{ix} &= m_x + g_{ix} n_{ix} \quad \text{(model)}
 \end{align}
 This has maximum-likelihood solution
 \begin{align}
@@ -961,12 +964,13 @@ We further assume
 	\item Similarly the covariance is Fourier-diagonal with power spectrum
 		$\widetilde{N}$
 \end{enumerate}
-Under these assumptions it can be shown that when the number of passes is much
+Under these assumptions it can be shown (see appendix~\ref{sec:toy-gain1d-time-deriv})
+that when the number of passes is much
 greater than one the Fourier transform of the maximum likelihood solution becomes
 \begin{align}
-	\hat{\widetilde{m}}_f &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + (\widetilde{\Gamma} \ast \widetilde{N}^{-1})_f} \widetilde{m}_f
+	\hat{\widetilde{m}}_f &= \frac{\widetilde{N}^{-1}_f}{\widetilde{N}^{-1}_f + S^{-2}(\widetilde{\Gamma} \ast \widetilde{N}^{-1})_f} \widetilde{m}_f
 \end{align}
-where $\ast$ is the convolution operator. We see that in the limit of uncorrelated
+where $\ast$ is the convolution operator and $S$ is the number of pixels, and we've assumed the standard discrete Fourier transform normalization. We see that in the limit of uncorrelated
 gain errors, $\widetilde{\Gamma}_f = \text{const}$, the bias becomes $1/(1+\text{const}\cdot\widetilde{N})$.
 For atmospheric noise this gives a strong suppression of the signal on large scales, just
 like we saw for detector errors. On the other limit where the gain error changes slowly
@@ -1125,6 +1129,8 @@ is bias free.
 We would like to thank Jon Sievers for first making us aware
 that subpixel errors weren't just limited to X'es around point
 sources and other small-scale effects, and Ed Wollack and Lorenzo Piazzo for useful comments.
+Yunyang Li pointed out an error in the original version of the 1D gain
+toy example (now fixed).
 This work was supported by a grant from the Simons Foundation (CCA 918271, PBL).
 
 \bibliographystyle{act_titles}
@@ -1259,5 +1265,63 @@ operation is separable, so is the resulting pixel window. Hence
 \begin{align}
 	W_\text{lin}^\text{2D}(f_y,f_x) &= W_\text{lin}(f_y) W_\text{lin}(f_x)
 \end{align}
+
+
+
+\section{Time-dependent gain errors}
+\label{sec:toy-gain1d-time-deriv}
+Continuing from section~\ref{sec:toy-gain1d-time}, we had
+\begin{align}
+	\underbrace{\left(\sum_i g_{ix}^{-1} N_{xy}^{-1} g_{iy}^{-1}\right)}_{A_{xy}} \hat m_y &= \underbrace{\sum_i g_{ix}^{-1}N_{xy}^{-1} (m_y + n_{iy})}_{b_x}
+\end{align}
+Expanding $g_{ix}^{-1} = 1+\gamma_{ix}$ and assuming the detector makes $M$ passes over the pixels, we get
+\begin{align}
+	A_{xy} &= \sum_i^M(1+\gamma_{ix})N_{xy}^{-1}(1+\gamma_{iy}) \notag \\
+	&= M\Big(N_{xy}^{-1} + \underbrace{\frac1M \sum_i^M \gamma_{ix}N_{xy}^{-1}}_\text{odd} + \underbrace{\frac1M \sum_i^M N_{xy}^{-1}\gamma_{iy}}_\text{odd} + \underbrace{\frac1M \sum_i^M \gamma_{ix}N_{xy}^{-1}\gamma_{iy}}_{\psi_{xy}}\Big)
+\end{align}
+In the limit $M\rightarrow\infty$ the odd powers of the random variable $\gamma$ disappear,
+so we are left with computing $\psi$. Since both $N$ and $\Gamma$ are diagonal in Fourier
+space, it makes sense to express $\psi$ in Fourier space. Denoting Fourier-space quantities with
+a tilde, and defining the Fourier transform operators
+\begin{align}
+	F_{kx} &= \exp(-2\pi \sqrt{-1} k x / S) &
+	F_{xk}^{-1} &= \frac1N \exp(2\pi \sqrt{-1} k x / S)
+\end{align}
+where $S$ is the number of pixels, we get
+\begin{align}
+	\widetilde{\psi}_{jk} &= \frac1M \sum_i^M \sum_{xy} F_{jx}(F^{-1}\widetilde\gamma)_x (F^{-1}\widetilde{N}F^{-1\dag})^{-1}_{xy}(F^{-1}\widetilde\gamma)_y^\dag F_{yk}^\dag \notag \\
+	&= \frac1M \sum_i^M \sum_{xy} F_{jx}(F^{-1}\widetilde\gamma)_x (F^\dag \widetilde{N}^{-1}F)_{xy}(F^{-1}\widetilde\gamma)_y^\dag F_{yk}^\dag \notag \\
+	&= \frac1M \sum_i^M \sum_{xy\alpha\beta\gamma} \frac{1}{N^2}\exp\Big(\frac{2\pi\sqrt{-1}}{S}(\underbrace{-jx+\alpha x+\beta x}_{N\delta_{\beta,j-\alpha}} \underbrace{-\beta y -\gamma y + ky}_{N\delta_{\gamma,k-\beta}})\Big) \widetilde\gamma_\alpha \widetilde{N}_{\beta}^{-1} \widetilde\gamma_\gamma^\dag\Big) \notag \\
+	&= \sum_\alpha \underbrace{\Big(\frac1M \sum_i^M \widetilde\gamma_\alpha \widetilde\gamma_{k-j+\alpha}\Big)}_{\widetilde\Gamma_{\alpha,\alpha+k-j} = \widetilde\Gamma_\alpha \delta_{k,j}} \widetilde{N}_{j-\alpha}^{-1} \notag \\
+	&= \sum_\alpha \widetilde\Gamma_\alpha \widetilde{N}_{j-\alpha}^{-1} \delta_{jk} \notag \\
+	&= \Big(\widetilde\Gamma \ast \widetilde{N}^{-1}\Big)_j \delta_{jk}
+\end{align}
+So $\psi$ is Fourier diagonal just like $\Gamma$ and $N^{-1}$, and its diagonal is
+the convolution of their diagonals. With this we can complete the expression for $A$.
+\begin{align}
+	\widetilde{A} &= F A F^\dag
+	= F\Big((F^{-1}\widetilde{N}F^{-1\dag})^{-1} + F^{-1}\widetilde\psi F^{-1\dag}\Big)F^\dag
+	= MS^2\Big(\widetilde{N}^{-1} + S^{-2} \widetilde\Gamma \ast \widetilde{N}^{-1}\Big)
+\end{align}
+Moving on to the right-hand-side of the equation for $\hat m$, we have
+\begin{align}
+	b_x &= \sum_i^M(1+\gamma_{ix})N_{xy}^{-1}(m_y + n_{iy}) \notag \\
+	&= M\Big(N_{xy}^{-1}m_y + \underbrace{\frac1M\sum_i^M\gamma_{ix}N_{xy}^{-1}n_{iy}}_\text{odd} + \underbrace{\frac1M\sum_i^M \gamma_{ix}N_{xy}^{-1} m_y}_\text{odd} + \underbrace{\frac1M\sum_i^M\gamma_{ix}N_{xy}^{-1}n_{iy}}_\text{$\gamma$ and $n$ independent}\Big)
+\end{align}
+All but the first term fall out if we assume that the fluctuations in $\gamma$ and $n$
+are independent. Going to Fourier space, we are left with
+\begin{align}
+	\widetilde b &= Fb = MF\Big(F^{-1}\widetilde{N}F^{-1\dag}\Big)^{-1} F^{-1}\widetilde{m}
+	= M\underbrace{FF^\dag}_{S}\widetilde{N}^{-1}\underbrace{FF^{-1}}_{I}\widetilde{m}
+	= MS\widetilde{N}^{-1}\widetilde{m}
+\end{align}
+With this the full Fourier-space equation for $\hat{\widetilde{m}}$ becomes:
+\begin{align}
+	A\hat m &= b \Leftrightarrow \notag
+	F^{-1}\widetilde{A}\underbrace{F^{-1\dag}F^{-1}}_{S^{-1}}\hat{\widetilde{m}} = F^{-1}\widetilde{b} \Leftrightarrow \notag
+	\hat{\widetilde{m}} = \frac{\widetilde{N}^{-1}}{\widetilde{N}^{-1} + S^{-2}\widetilde{\Gamma}\ast\widetilde{N}^{-1}} \widetilde{m}
+\end{align}
+The factor $S^{-2}$ is an artifact of the Fourier normalization used, and would
+differ for other Fourier unit choices.
 
 \end{document}
