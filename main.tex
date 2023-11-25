@@ -1,4 +1,4 @@
-\documentclass[twocolumn]{openjournal}
+\documentclass[twocolumn,numberedappendix]{openjournal}
 \pdfoutput=1
 \usepackage{amsmath,amssymb,gensymb,color,graphicx,array,multirow,soul,rotating}
 \usepackage{natbib,multirow,placeins,textcomp,subfigure}
@@ -78,7 +78,7 @@ and assumptions realistic for ground-based CMB telescopes. This bias is
 invisible to simulation-based tests that do not explicitly model them,
 making it easy to miss. We identify two different mechanisms that both
 cause suppression of long-wavelength modes: sub-pixel errors and detector
-gain calibration mismatch. We show that specific case of subpixel bias can
+gain calibration mismatch. We show that the specific case of subpixel bias can
 be eliminated using bilinear pointing matrices, but also provide simple
 methods for testing for the presence of large-scale model error bias in
 general.
@@ -207,6 +207,7 @@ discontinuous jumps (the blue curve in the figure).
 		to multipoles of hundreds on the sky. The power axis is dimensionless
 		here, but for a real-world case could have units like $\micro$K$^2$/Hz.
 	}
+	\vspace{3mm}
 	\label{fig:ps}
 \end{figure}
 
@@ -416,6 +417,7 @@ map_ds = np.linalg.solve(P.T.dot(P), P.T.dot(signal - a))
 		\dfn{destripe}: Destriper in the maximum-likelihood limit
 		(1-sample baselines with optimal baseline prior). Identical to ML.
 	}
+	\vspace{3mm}
 	\label{fig:subpix-bias}
 \end{figure}
 
@@ -733,6 +735,7 @@ figure~\ref{fig:linwin1d}.
 	windows model the response of the Fourier coefficients to
 	binned (unweighted) mapmaking. Square it to get the effect on
 	the power spectrum.}
+	\vspace{2mm}
 	\label{fig:linwin1d}
 \end{figure}
 
@@ -793,7 +796,7 @@ This gives us the inverse noise model
 The maximum-likelihood solution of equation~\ref{eq:gain-toy1d} is
 \begin{align}
 	\hat m &= (P^TGG^{-1}N^{-1}G^{-1}GP)^{-1}P^TGG^{-1}N^{-1}G^{-1}d \notag \\
-	&= (P^TN^{-1}P)^{-1}P^TN^{-1}P^{-1}N^{-1}(Pm + n) \notag \\
+	&= (P^TN^{-1}P)^{-1}P^TN^{-1}(Pm + n) \notag \\
 	&= Pm+n
 \end{align}
 which has expectation value $\langle \hat m \rangle = m$, which is unbiased.
@@ -811,20 +814,20 @@ Given this model, our maximum-likelihood solution for $m$ is
 \end{align}
 Inserting the actual data behavior from equation~\ref{eq:gain-toy1d}, we get
 \begin{align}
-	\langle\hat m\rangle &= (P^TG^{-1}N^{-1}G^{-1}P)^{-1}P^TG^{-1}N^{-1}G^{-1}Gm \notag \\
-	&= (P^TG^{-1}N^{-1}G^{-1}P)^{-1}P^TG^{-1}N^{-1}m
+	\langle\hat m\rangle &= (P^TG^{-1}N^{-1}G^{-1}P)^{-1}P^TG^{-1}N^{-1}G^{-1}GPm \notag \\
+	&= (P^TG^{-1}N^{-1}G^{-1}P)^{-1}P^TG^{-1}N^{-1}Pm
 \end{align}
 Since $N$ is diagonal in Fourier space and both $G$ and $P$ are constant in time,
 the whole equation becomes Fourier-diagonal
 \begin{align}
-	\langle\hat m_f\rangle &= (P^TG^{-1}N_f^{-1}G^{-1}P)^{-1}P^TG^{-1}N_f^{-1}m_f
+	\langle\hat m_f\rangle &= (P^TG^{-1}N_f^{-1}G^{-1}P)^{-1}P^TG^{-1}N_f^{-1}Pm_f
 \end{align}
 Inserting eq.~\ref{eq:gain-toy1d-ninv}, this simplifies to ($A_f$ cancels)
 \begin{align}
-	\langle\hat m_f\rangle &= \frac{g_1+g_2}{g_1^2+g_2^2} \frac{1-\alpha_f}{1-\frac{2g_1g_2}{g_1^2+g_2^2}\alpha_f} m_f
+	\langle\hat m_f\rangle &= g_1g_2\frac{g_1+g_2}{g_1^2+g_2^2} \frac{1-\alpha_f}{1-\frac{2g_1g_2}{g_1^2+g_2^2}\alpha_f} m_f
 \end{align}
 So the effect of the gain miscalibration is an overall scaling of the result
-as one would expect, $(g_1+g_2)/(g_1^2+g_2^2)$, times a transfer function
+as one would expect, $g_1g_2(g_1+g_2)/(g_1^2+g_2^2)$, times a transfer function
 \begin{align}
 	\text{TF}(f) &= \frac{1-\alpha_f}{1-\frac{2g_1g_2}{g_1^2+g_2^2}\alpha_f}
 \end{align}
@@ -924,6 +927,7 @@ to filter less.}
 	are too costly to be realistic solutions to the power loss problem. Note the logarithmic
 	y axis and that the binned curve has been divided by $10^4$ to fit in the graph.}
 	\label{fig:gain-noise-2d}
+	\vspace{3mm}
 \end{figure}
 
 Detectors with strongly correlated noise on large scales and O(10\%) gain
@@ -1253,7 +1257,7 @@ starts falling.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=8cm]{pixwin/pixwins.pdf}
-	\caption{Comparison of of the 1D pixel windows for nearest neighbor mapmaking ($W_\text{nn}$)
+	\caption{Comparison the 1D pixel windows for nearest neighbor mapmaking ($W_\text{nn}$)
 	and linear mapmaking ($W_\text{nn}$), plotted up to the Nyquist frequency, which is $\frac12$ in
 	these units.}
 	\label{fig:pixwins}
@@ -1266,7 +1270,7 @@ operation is separable, so is the resulting pixel window. Hence
 	W_\text{lin}^\text{2D}(f_y,f_x) &= W_\text{lin}(f_y) W_\text{lin}(f_x)
 \end{align}
 
-
+\vspace{5mm}
 
 \section{Time-dependent gain errors}
 \label{sec:toy-gain1d-time-deriv}
